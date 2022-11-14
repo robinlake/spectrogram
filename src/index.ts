@@ -1,5 +1,5 @@
 "use strict";
-import {spectrogram, resize} from './spectrogram.js'
+import {canvas, resize} from './spectrogram.js'
 
 const getUserMic = (): Promise<MediaStream> => {
     return navigator.mediaDevices.getUserMedia({
@@ -14,7 +14,7 @@ const connectStreamSourceToNodes = async (getStream: () => Promise<MediaStream>,
 }
 
 function setupEventListeners() {
-    window.addEventListener('resize', resize)
+    window.addEventListener('resize', () => resize(canvas))
 
   }
 
@@ -24,5 +24,5 @@ window.onload = () => {
     const context = new AudioContext({sampleRate});
     const analyserNode = new AnalyserNode(context, { fftSize })
     connectStreamSourceToNodes(getUserMic, context);
-    resize();
+    resize(canvas);
 }

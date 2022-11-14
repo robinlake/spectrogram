@@ -1,12 +1,16 @@
-const spectrogram = <HTMLCanvasElement>document.getElementById('spectrogram')
+const canvas = <HTMLCanvasElement>document.getElementById('canvas')
 
+interface Spectrogram {
+    canvas: HTMLCanvasElement;
+    resize: (canvas: HTMLCanvasElement) => void;
+}
   
-function resize() {
-    if (spectrogram === null) {
+function resize(canvas: HTMLCanvasElement) {
+    if (canvas === null) {
         return
     }
-    spectrogram.width = spectrogram.clientWidth * window.devicePixelRatio
-    spectrogram.height = spectrogram.clientHeight * window.devicePixelRatio
+    canvas.width = canvas.clientWidth * window.devicePixelRatio
+    canvas.height = canvas.clientHeight * window.devicePixelRatio
   }
 
-  export {spectrogram, resize}
+  export {canvas, resize}
