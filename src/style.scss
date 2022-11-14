@@ -13,5 +13,8 @@ body {
     .canvas {
         display: grid;
         justify-items: center;
+        canvas {
+            border: 1px solid black;
+        }
     }
 }

@@ -13,3 +13,6 @@ body {
   display: grid;
   justify-items: center;
 }
+.content .canvas canvas {
+  border: 1px solid black;
+}
