@@ -96,10 +96,27 @@ function setupEventListeners(spectrogram: Spectrogram) {
 
     const canvasContext = canvas.getContext('2d')
 
-    if (canvasContext != null) {
-        drawBars(canvas, canvasContext, frequencyBinCount, decibelValues, frequencies)
-    }
+    // if (canvasContext != null) {
+    //     drawBars(canvas, canvasContext, frequencyBinCount, decibelValues, frequencies)
+    // }
+    drawColumn(canvas, frequencyBinCount, decibelValues, frequencies);
   }
+
+function drawColumn(canvas: HTMLCanvasElement, frequencyBinCount: number, decibelValues: Uint8Array, frequencies: number[] ) {
+    const canvasContext = canvas.getContext('2d')
+    if (canvasContext === null) {
+        return
+    }
+    canvasContext.clearRect(0, 0, canvas.width, canvas.height)
+    const columnWidth = 20;
+    const binHeight = canvas.height / frequencyBinCount;
+
+    decibelValues.forEach((decibelValue, index) => {
+        canvasContext.fillStyle = `hsl(${decibelValue}, 100%, 50%)`
+        const yStart = canvas.height - (binHeight * (index + 1)) // canvas.height corresponds to bottom of the canvas
+        canvasContext.fillRect(0, yStart, columnWidth, binHeight)
+    })
+}
 
 function drawBars(canvas: HTMLCanvasElement, canvasContext: CanvasRenderingContext2D, frequencyBinCount: number, decibelValues: Uint8Array, frequencies: number[]) {
     const width = canvas.width
