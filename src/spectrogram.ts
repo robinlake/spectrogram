@@ -1,8 +1,13 @@
-const canvas = <HTMLCanvasElement>document.getElementById('canvas')
+// const canvas = <HTMLCanvasElement>document.getElementById('canvas')
 
 interface Spectrogram {
     canvas: HTMLCanvasElement;
+    volume: HTMLInputElement;
     resize: (canvas: HTMLCanvasElement) => void;
+    initializeCanvas: (canvas: HTMLCanvasElement) => void;
+    analyserNode: AnalyserNode;
+    context: AudioContext;
+    gainNode: GainNode;
 }
   
 function resize(canvas: HTMLCanvasElement) {
@@ -13,4 +18,14 @@ function resize(canvas: HTMLCanvasElement) {
     canvas.height = canvas.clientHeight * window.devicePixelRatio
   }
 
-  export {canvas, resize}
+function initializeCanvas(canvas: HTMLCanvasElement) {
+    const ctx = canvas.getContext("2d");
+    console.log('in func')
+    if (ctx != null) {
+        console.log('in if block')
+        ctx.fillStyle = "green";
+        ctx.fillRect(10, 10, 150, 100);
+    }
+}
+
+  export {Spectrogram, resize, initializeCanvas}
