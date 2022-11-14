@@ -1,4 +1,17 @@
+$background: #eee;
+
 body {
-    color: blue;
-    background: red;
+    background: background;
+}
+
+.content {
+    display: grid;
+    width: 100vw;
+    max-width: 1000px;
+    justify-content: center;
+    justify-items: center;
+    .canvas {
+        display: grid;
+        justify-items: center;
+    }
 }

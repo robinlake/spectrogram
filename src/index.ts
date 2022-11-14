@@ -25,7 +25,6 @@ function setupEventListeners(spectrogram: Spectrogram) {
     window.addEventListener('resize', () => resize(canvas))
     volume.addEventListener('input', e => {
         if (e.target != null) {
-            console.log("target != null")
             const value = parseFloat((e.target as HTMLInputElement).value)
             gainNode.gain.setTargetAtTime(value, context.currentTime, .01)
         }
@@ -55,21 +54,7 @@ function setupEventListeners(spectrogram: Spectrogram) {
     }
   
     let sortedStrengths = new Map([...frequencyStrengthMap.entries()].sort((a, b) => b[1] - a[1]))
-  
-    // if (dataArray[0] > 40) {
-    //     console.log("bufferLength: ", bufferLength);
-    //     console.log("frequencyArray: ", frequencyArray);
-    //     console.log("frequencyStrengthMap: ", frequencyStrengthMap);
-    //     console.log("sortedStrengths: ", sortedStrengths);
-    //     console.log(dataArray);
-    // } else {
-    //     console.log("dataArray: ", dataArray)
-    // }
-  
-  
-    // const timeDomainArray = new Uint8Array(bufferLength)
-    // analyserNode.getByteTimeDomainData(timeDomainArray)
-    // console.log(timeDomainArray);
+
     const width = canvas.width
     const height = canvas.height
     const barWidth = width / bufferLength

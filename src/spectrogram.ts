@@ -20,9 +20,7 @@ function resize(canvas: HTMLCanvasElement) {
 
 function initializeCanvas(canvas: HTMLCanvasElement) {
     const ctx = canvas.getContext("2d");
-    console.log('in func')
     if (ctx != null) {
-        console.log('in if block')
         ctx.fillStyle = "green";
         ctx.fillRect(10, 10, 150, 100);
     }
