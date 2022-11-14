@@ -68,23 +68,25 @@ function drawVisualizer(spectrogram) {
     for (let i = 0; i < bufferLength; i++) {
         frequencyStrengthMap.set(frequencyArray[i], dataArray[i]);
     }
-    let sortedStrengths = new Map([...frequencyStrengthMap.entries()].sort((a, b) => b[1] - a[1]));
-    const width = canvas.width;
-    const height = canvas.height;
-    const barWidth = width / bufferLength;
     const canvasContext = canvas.getContext('2d');
     if (canvasContext != null) {
+        const width = canvas.width;
+        const height = canvas.height;
+        const barWidth = width / bufferLength;
         canvasContext.clearRect(0, 0, width, height);
         dataArray.forEach((item, index) => {
             const y = item / 255 * height / 2;
             const x = barWidth * index;
-            canvasContext.fillStyle = `hsl(${y / height * 400}, 100%, 50%)`;
-            canvasContext.fillRect(x, height - y, barWidth, y);
+            drawBar(x, y, height, barWidth, canvasContext);
             if (item > 10) {
                 canvasContext.strokeText(frequencyArray[index], x, height - y);
             }
         });
     }
+}
+function drawBar(x, y, height, barWidth, canvasContext) {
+    canvasContext.fillStyle = `hsl(${y / height * 400}, 100%, 50%)`;
+    canvasContext.fillRect(x, height - y, barWidth, y);
 }
 function initializeSpectrogram(config) {
     const { sampleRate, fftSize, canvasConfig } = config;
