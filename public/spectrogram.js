@@ -53,33 +53,36 @@ function setupEventListeners(spectrogram) {
         }
     });
 }
+function getFrequencies(spectrogram) {
+    const { analyserNode, context } = spectrogram;
+    const frequencyBinCount = analyserNode.frequencyBinCount;
+    const maxFrequency = context.sampleRate;
+    const frequencies = new Array(frequencyBinCount);
+    for (let i = 0; i < frequencyBinCount; i++) {
+        frequencies[i] = ((i + 1) / frequencyBinCount) * maxFrequency;
+    }
+    return frequencies;
+}
 function drawVisualizer(spectrogram) {
     requestAnimationFrame(() => drawVisualizer(spectrogram));
     const { analyserNode, context, canvas } = spectrogram;
-    const bufferLength = analyserNode.frequencyBinCount;
-    const maxFrequency = context.sampleRate;
-    const frequencyArray = new Array(bufferLength);
-    for (let i = 0; i < bufferLength; i++) {
-        frequencyArray[i] = ((i + 1) / bufferLength) * maxFrequency;
-    }
-    const dataArray = new Uint8Array(bufferLength);
-    analyserNode.getByteFrequencyData(dataArray);
-    const frequencyStrengthMap = new Map();
-    for (let i = 0; i < bufferLength; i++) {
-        frequencyStrengthMap.set(frequencyArray[i], dataArray[i]);
-    }
+    const frequencyBinCount = analyserNode.frequencyBinCount;
+    const frequencies = getFrequencies(spectrogram);
+    const decibelValues = new Uint8Array(frequencyBinCount);
+    analyserNode.getByteFrequencyData(decibelValues);
     const canvasContext = canvas.getContext('2d');
     if (canvasContext != null) {
         const width = canvas.width;
         const height = canvas.height;
-        const barWidth = width / bufferLength;
+        const barWidth = width / frequencyBinCount;
         canvasContext.clearRect(0, 0, width, height);
-        dataArray.forEach((item, index) => {
+        decibelValues.forEach((item, index) => {
             const y = item / 255 * height / 2;
             const x = barWidth * index;
             drawBar(x, y, height, barWidth, canvasContext);
             if (item > 10) {
-                canvasContext.strokeText(frequencyArray[index], x, height - y);
+                canvasContext.strokeText(frequencies[index].toString(), x, height - y);
+                canvasContext.strokeText(decibelValues[index].toString(), x, height - (y + 30));
             }
         });
     }
