@@ -1,0 +1,23 @@
+{
+  "name": "spectrogram",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run watch:ts & npm run watch:sass",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch:sass": "sass --no-source-map --watch src/style.scss:public/css/style.css",
+    "watch:ts": "tsc -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/robinlake/spectrogram.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/robinlake/spectrogram/issues"
+  },
+  "homepage": "https://github.com/robinlake/spectrogram#readme"
+}
