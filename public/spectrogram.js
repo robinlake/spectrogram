@@ -72,20 +72,23 @@ function drawVisualizer(spectrogram) {
     analyserNode.getByteFrequencyData(decibelValues);
     const canvasContext = canvas.getContext('2d');
     if (canvasContext != null) {
-        const width = canvas.width;
-        const height = canvas.height;
-        const barWidth = width / frequencyBinCount;
-        canvasContext.clearRect(0, 0, width, height);
-        decibelValues.forEach((item, index) => {
-            const y = item / 255 * height / 2;
-            const x = barWidth * index;
-            drawBar(x, y, height, barWidth, canvasContext);
-            if (item > 10) {
-                canvasContext.strokeText(frequencies[index].toString(), x, height - y);
-                canvasContext.strokeText(decibelValues[index].toString(), x, height - (y + 30));
-            }
-        });
+        drawBars(canvas, canvasContext, frequencyBinCount, decibelValues, frequencies);
     }
+}
+function drawBars(canvas, canvasContext, frequencyBinCount, decibelValues, frequencies) {
+    const width = canvas.width;
+    const height = canvas.height;
+    const barWidth = width / frequencyBinCount;
+    canvasContext.clearRect(0, 0, width, height);
+    decibelValues.forEach((item, index) => {
+        const y = item / 255 * height / 2;
+        const x = barWidth * index;
+        drawBar(x, y, height, barWidth, canvasContext);
+        if (item > 10) {
+            canvasContext.strokeText(frequencies[index].toString(), x, height - y);
+            canvasContext.strokeText(decibelValues[index].toString(), x, height - (y + 30));
+        }
+    });
 }
 function drawBar(x, y, height, barWidth, canvasContext) {
     canvasContext.fillStyle = `hsl(${y / height * 400}, 100%, 50%)`;

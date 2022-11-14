@@ -97,24 +97,28 @@ function setupEventListeners(spectrogram: Spectrogram) {
     const canvasContext = canvas.getContext('2d')
 
     if (canvasContext != null) {
-        const width = canvas.width
-        const height = canvas.height
-        const barWidth = width / frequencyBinCount
-      
-        canvasContext.clearRect(0, 0, width, height)
-      
-        decibelValues.forEach((item, index) => {
-            const y = item / 255 * height / 2
-            const x = barWidth * index
-        
-            drawBar(x, y, height, barWidth, canvasContext)
-            if (item > 10) {
-                canvasContext.strokeText(frequencies[index].toString(), x, height - y)
-                canvasContext.strokeText(decibelValues[index].toString(), x, height - (y + 30))
-            }
-        })
+        drawBars(canvas, canvasContext, frequencyBinCount, decibelValues, frequencies)
     }
   }
+
+function drawBars(canvas: HTMLCanvasElement, canvasContext: CanvasRenderingContext2D, frequencyBinCount: number, decibelValues: Uint8Array, frequencies: number[]) {
+    const width = canvas.width
+    const height = canvas.height
+    const barWidth = width / frequencyBinCount
+  
+    canvasContext.clearRect(0, 0, width, height)
+  
+    decibelValues.forEach((item, index) => {
+        const y = item / 255 * height / 2
+        const x = barWidth * index
+    
+        drawBar(x, y, height, barWidth, canvasContext)
+        if (item > 10) {
+            canvasContext.strokeText(frequencies[index].toString(), x, height - y)
+            canvasContext.strokeText(decibelValues[index].toString(), x, height - (y + 30))
+        }
+    })
+}
   
 function drawBar(x: number, y: number, height: number, barWidth: number, canvasContext: CanvasRenderingContext2D) {
     canvasContext.fillStyle = `hsl(${y / height * 400}, 100%, 50%)`
