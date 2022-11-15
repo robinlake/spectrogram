@@ -15,9 +15,45 @@ interface SpectrogramConfig {
 interface SpectralTimeSeries {
     frequencyBinCount: number;
     maxFrequency: number;
+    maxSampleCount: number;
+    analyserNode: AnalyserNode;
     getFrequencies: (frequencyBinCount: number, maxFrequency: number) => number[];
     decibelValues: number[][];
-    pushDecibelValues: (decibelValues: number[][], analyserNode: AnalyserNode) => number[][];
+    pushDecibelValues: (decibelValues: number[][], analyserNode: AnalyserNode, maxSampleCount: number) => number[][];
+}
+
+function createSpectralTimeSeries(maxFrequency: number, maxSampleCount: number, frequencyBinCount: number, analyserNode: AnalyserNode): SpectralTimeSeries {
+    const decibelValues: number[][] = [[]];
+    const timeSeries = {
+        frequencyBinCount,
+        maxFrequency,
+        maxSampleCount,
+        analyserNode,
+        getFrequencies: () => getFrequencies(frequencyBinCount, maxFrequency),
+        decibelValues,
+        pushDecibelValues: (decibelValues: number[][], analyserNode: AnalyserNode, maxSampleCount: number) => pushDecibelValues(decibelValues, analyserNode, maxSampleCount),
+    }
+    return timeSeries;
+}
+
+function getFrequencies(frequencyBinCount: number, maxFrequency: number): number[] {  
+    const frequencies = new Array<number>(frequencyBinCount);
+    for (let i = 0; i < frequencyBinCount; i++) {
+        frequencies[i] = ((i+1)/frequencyBinCount) * maxFrequency;
+    }
+    return frequencies;
+  }
+
+// Todo: get most recent decibel values and push them onto array
+// only fill up to max sample count
+function pushDecibelValues(decibelValues: number[][], analyserNode: AnalyserNode, maxSampleCount: number): number[][] {
+    const newDecibalValues = new Uint8Array(analyserNode.frequencyBinCount)
+    analyserNode.getByteFrequencyData(newDecibalValues)
+    decibelValues.push(new Array<number>(...newDecibalValues));
+    if (decibelValues.length > maxSampleCount) {
+        decibelValues.shift();
+    }
+    return decibelValues;
 }
 
 const getUserMic = (): Promise<MediaStream> => {
@@ -49,18 +85,6 @@ function setupEventListeners(spectrogram: Spectrogram) {
       })
   }
 
-  function getFrequencies(spectrogram: Spectrogram): number[] {
-    const {analyserNode, context} = spectrogram;
-    const frequencyBinCount = analyserNode.frequencyBinCount
-  
-    const maxFrequency = context.sampleRate;
-    const frequencies = new Array<number>(frequencyBinCount);
-    for (let i = 0; i < frequencyBinCount; i++) {
-        frequencies[i] = ((i+1)/frequencyBinCount) * maxFrequency;
-    }
-    return frequencies;
-  }
-
 function initializeSpectrogram(config: SpectrogramConfig, canvasConfig: CanvasConfig): Spectrogram {
     const {sampleRate, fftSize} = config;
     
@@ -82,4 +106,4 @@ function initializeSpectrogram(config: SpectrogramConfig, canvasConfig: CanvasCo
     return spectrogram;
 }
 
-  export {Spectrogram, resize, initializeCanvas, initializeSpectrogram, getFrequencies}
+  export {Spectrogram, resize, initializeCanvas, initializeSpectrogram, getFrequencies, createSpectralTimeSeries, SpectralTimeSeries}

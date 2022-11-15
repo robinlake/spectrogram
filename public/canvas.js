@@ -53,17 +53,16 @@ function drawBar(x, y, height, barWidth, canvasContext) {
     canvasContext.fillStyle = `hsl(${y / height * 400}, 100%, 50%)`;
     canvasContext.fillRect(x, height - y, barWidth, y);
 }
-function drawVisualizer(spectrogram, canvas) {
-    requestAnimationFrame(() => drawVisualizer(spectrogram, canvas));
-    const { analyserNode, context } = spectrogram;
-    const frequencyBinCount = analyserNode.frequencyBinCount;
-    const frequencies = getFrequencies(spectrogram);
-    const decibelValues = new Uint8Array(frequencyBinCount);
-    analyserNode.getByteFrequencyData(decibelValues);
+function drawVisualizer(timeSeries, canvas) {
+    requestAnimationFrame(() => drawVisualizer(timeSeries, canvas));
+    timeSeries.pushDecibelValues(timeSeries.decibelValues, timeSeries.analyserNode, timeSeries.maxSampleCount);
+    const frequencyBinCount = timeSeries.frequencyBinCount;
+    const maxFrequency = timeSeries.maxFrequency;
+    const frequencies = getFrequencies(frequencyBinCount, maxFrequency);
     const canvasContext = canvas.getContext('2d');
     // if (canvasContext != null) {
     //     drawBars(canvas, canvasContext, frequencyBinCount, decibelValues, frequencies)
     // }
-    drawColumn(canvas, frequencyBinCount, decibelValues, frequencies);
+    drawColumn(canvas, frequencyBinCount, timeSeries.decibelValues[0], frequencies);
 }
 export { resize, initializeCanvas, drawColumn, drawVisualizer };

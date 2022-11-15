@@ -1,4 +1,4 @@
-import {Spectrogram, getFrequencies} from './spectrogram.js';
+import {Spectrogram, getFrequencies, SpectralTimeSeries} from './spectrogram.js';
 interface CanvasConfig {
     height: number;
     width: number;
@@ -25,7 +25,7 @@ function initializeCanvas(canvas: HTMLCanvasElement, config: CanvasConfig) {
 }
 
 
-function drawColumn(canvas: HTMLCanvasElement, frequencyBinCount: number, decibelValues: Uint8Array, frequencies: number[] ) {
+function drawColumn(canvas: HTMLCanvasElement, frequencyBinCount: number, decibelValues: number[], frequencies: number[] ) {
     const canvasContext = canvas.getContext('2d')
     if (canvasContext === null) {
         return
@@ -70,24 +70,20 @@ function drawBar(x: number, y: number, height: number, barWidth: number, canvasC
 
 }
 
-function drawVisualizer(spectrogram: Spectrogram, canvas: HTMLCanvasElement) {
-    requestAnimationFrame(() => drawVisualizer(spectrogram, canvas))
-    const {analyserNode, context} = spectrogram;
+function drawVisualizer(timeSeries: SpectralTimeSeries, canvas: HTMLCanvasElement) {
+    requestAnimationFrame(() => drawVisualizer(timeSeries, canvas))
+    timeSeries.pushDecibelValues(timeSeries.decibelValues, timeSeries.analyserNode, timeSeries.maxSampleCount);
   
+    const frequencyBinCount = timeSeries.frequencyBinCount
+    const maxFrequency = timeSeries.maxFrequency;
+    const frequencies = getFrequencies(frequencyBinCount, maxFrequency);
   
-    const frequencyBinCount = analyserNode.frequencyBinCount
-  
-    const frequencies = getFrequencies(spectrogram);
-  
-    const decibelValues = new Uint8Array(frequencyBinCount)
-    analyserNode.getByteFrequencyData(decibelValues)
-
     const canvasContext = canvas.getContext('2d')
 
     // if (canvasContext != null) {
     //     drawBars(canvas, canvasContext, frequencyBinCount, decibelValues, frequencies)
     // }
-    drawColumn(canvas, frequencyBinCount, decibelValues, frequencies);
+    drawColumn(canvas, frequencyBinCount, timeSeries.decibelValues[0], frequencies);
   }
 
 export {resize, initializeCanvas, drawColumn, CanvasConfig, drawVisualizer};

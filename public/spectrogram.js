@@ -8,6 +8,37 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { resize, initializeCanvas } from './canvas.js';
+function createSpectralTimeSeries(maxFrequency, maxSampleCount, frequencyBinCount, analyserNode) {
+    const decibelValues = [[]];
+    const timeSeries = {
+        frequencyBinCount,
+        maxFrequency,
+        maxSampleCount,
+        analyserNode,
+        getFrequencies: () => getFrequencies(frequencyBinCount, maxFrequency),
+        decibelValues,
+        pushDecibelValues: (decibelValues, analyserNode, maxSampleCount) => pushDecibelValues(decibelValues, analyserNode, maxSampleCount),
+    };
+    return timeSeries;
+}
+function getFrequencies(frequencyBinCount, maxFrequency) {
+    const frequencies = new Array(frequencyBinCount);
+    for (let i = 0; i < frequencyBinCount; i++) {
+        frequencies[i] = ((i + 1) / frequencyBinCount) * maxFrequency;
+    }
+    return frequencies;
+}
+// Todo: get most recent decibel values and push them onto array
+// only fill up to max sample count
+function pushDecibelValues(decibelValues, analyserNode, maxSampleCount) {
+    const newDecibalValues = new Uint8Array(analyserNode.frequencyBinCount);
+    analyserNode.getByteFrequencyData(newDecibalValues);
+    decibelValues.push(new Array(...newDecibalValues));
+    if (decibelValues.length > maxSampleCount) {
+        decibelValues.shift();
+    }
+    return decibelValues;
+}
 const getUserMic = () => {
     return navigator.mediaDevices.getUserMedia({
         audio: true,
@@ -36,16 +67,6 @@ function setupEventListeners(spectrogram) {
         }
     });
 }
-function getFrequencies(spectrogram) {
-    const { analyserNode, context } = spectrogram;
-    const frequencyBinCount = analyserNode.frequencyBinCount;
-    const maxFrequency = context.sampleRate;
-    const frequencies = new Array(frequencyBinCount);
-    for (let i = 0; i < frequencyBinCount; i++) {
-        frequencies[i] = ((i + 1) / frequencyBinCount) * maxFrequency;
-    }
-    return frequencies;
-}
 function initializeSpectrogram(config, canvasConfig) {
     const { sampleRate, fftSize } = config;
     const context = new AudioContext({ sampleRate });
@@ -63,4 +84,4 @@ function initializeSpectrogram(config, canvasConfig) {
     setupContext(spectrogram);
     return spectrogram;
 }
-export { resize, initializeCanvas, initializeSpectrogram, getFrequencies };
+export { resize, initializeCanvas, initializeSpectrogram, getFrequencies, createSpectralTimeSeries };
