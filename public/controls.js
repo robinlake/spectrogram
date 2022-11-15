@@ -1,12 +1,14 @@
 import { resize, initializeCanvas, initializeSpectrogram, createSpectralTimeSeries } from './spectrogram.js';
-import { drawVisualizer } from './canvas.js';
+import { drawCanvasFrame } from './canvas.js';
 function startSpectrogram(spectrogramConfig, canvasConfig, maxSampleCount, canvas) {
     const spectrogram = initializeSpectrogram(spectrogramConfig, canvasConfig);
     const timeSeries = createSpectralTimeSeries(spectrogramConfig.sampleRate, maxSampleCount, spectrogramConfig.fftSize / 2, spectrogram.analyserNode);
     timeSeries.pushDecibelValues(timeSeries.decibelValues, spectrogram.analyserNode, timeSeries.maxSampleCount);
     if (canvas != null) {
-        drawVisualizer(timeSeries, canvas);
+        drawCanvasFrame(timeSeries, canvas);
     }
+}
+function stopSpectrogram() {
 }
 function initializeControls() {
     const fftSize = 128;

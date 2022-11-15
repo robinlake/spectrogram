@@ -74,8 +74,8 @@ function drawBar(x: number, y: number, height: number, barWidth: number, canvasC
 
 }
 
-function drawVisualizer(timeSeries: SpectralTimeSeries, canvas: HTMLCanvasElement) {
-    requestAnimationFrame(() => drawVisualizer(timeSeries, canvas))
+function drawCanvasFrame(timeSeries: SpectralTimeSeries, canvas: HTMLCanvasElement) {
+    requestAnimationFrame(() => drawCanvasFrame(timeSeries, canvas))
     timeSeries.pushDecibelValues(timeSeries.decibelValues, timeSeries.analyserNode, timeSeries.maxSampleCount);
   
     const frequencyBinCount = timeSeries.frequencyBinCount
@@ -90,4 +90,4 @@ function drawVisualizer(timeSeries: SpectralTimeSeries, canvas: HTMLCanvasElemen
     drawColumns(canvas, frequencyBinCount, timeSeries.decibelValues, frequencies);
   }
 
-export {resize, initializeCanvas, drawColumn, CanvasConfig, drawVisualizer};
+export {resize, initializeCanvas, drawColumn, CanvasConfig, drawCanvasFrame};

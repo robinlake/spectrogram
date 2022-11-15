@@ -56,8 +56,8 @@ function drawBar(x, y, height, barWidth, canvasContext) {
     canvasContext.fillStyle = `hsl(${y / height * 400}, 100%, 50%)`;
     canvasContext.fillRect(x, height - y, barWidth, y);
 }
-function drawVisualizer(timeSeries, canvas) {
-    requestAnimationFrame(() => drawVisualizer(timeSeries, canvas));
+function drawCanvasFrame(timeSeries, canvas) {
+    requestAnimationFrame(() => drawCanvasFrame(timeSeries, canvas));
     timeSeries.pushDecibelValues(timeSeries.decibelValues, timeSeries.analyserNode, timeSeries.maxSampleCount);
     const frequencyBinCount = timeSeries.frequencyBinCount;
     const maxFrequency = timeSeries.maxFrequency;
@@ -68,4 +68,4 @@ function drawVisualizer(timeSeries, canvas) {
     // }
     drawColumns(canvas, frequencyBinCount, timeSeries.decibelValues, frequencies);
 }
-export { resize, initializeCanvas, drawColumn, drawVisualizer };
+export { resize, initializeCanvas, drawColumn, drawCanvasFrame };
