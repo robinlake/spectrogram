@@ -44,8 +44,6 @@ function getFrequencies(frequencyBinCount: number, maxFrequency: number): number
     return frequencies;
   }
 
-// Todo: get most recent decibel values and push them onto array
-// only fill up to max sample count
 function pushDecibelValues(decibelValues: number[][], analyserNode: AnalyserNode, maxSampleCount: number): number[][] {
     const newDecibalValues = new Uint8Array(analyserNode.frequencyBinCount)
     analyserNode.getByteFrequencyData(newDecibalValues)
@@ -62,7 +60,7 @@ const getUserMic = (): Promise<MediaStream> => {
     })
 }
 
-async function setupContext(spectrogram: Spectrogram) {
+async function setupAudioContext(spectrogram: Spectrogram) {
     const {context, analyserNode, volume, gainNode} = spectrogram;
     const mic = await getUserMic();
     if (context.state === 'suspended') {
@@ -72,7 +70,7 @@ async function setupContext(spectrogram: Spectrogram) {
     source
     .connect(gainNode)
     .connect(analyserNode)
-    .connect(context.destination)
+    // .connect(context.destination)
 }
 
 function setupEventListeners(spectrogram: Spectrogram) {
@@ -101,9 +99,9 @@ function initializeSpectrogram(config: SpectrogramConfig, canvasConfig: CanvasCo
         config,
     }
     setupEventListeners(spectrogram);
-    setupContext(spectrogram);
+    setupAudioContext(spectrogram);
 
     return spectrogram;
 }
 
-  export {Spectrogram, resize, initializeCanvas, initializeSpectrogram, getFrequencies, createSpectralTimeSeries, SpectralTimeSeries}
+  export {Spectrogram, resize, initializeCanvas, initializeSpectrogram, getFrequencies, createSpectralTimeSeries, SpectralTimeSeries, SpectrogramConfig}

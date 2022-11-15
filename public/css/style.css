@@ -12,7 +12,19 @@ body {
 .content .canvas {
   display: grid;
   justify-items: center;
+  padding: 1rem;
 }
 .content .canvas canvas {
   border: 1px solid black;
+}
+
+.controls {
+  min-height: 200px;
+  width: 80vw;
+  padding: 1rem;
+}
+.controls .row {
+  display: grid;
+  grid-template-columns: 40% 40%;
+  justify-content: space-around;
 }

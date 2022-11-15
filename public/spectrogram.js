@@ -28,8 +28,6 @@ function getFrequencies(frequencyBinCount, maxFrequency) {
     }
     return frequencies;
 }
-// Todo: get most recent decibel values and push them onto array
-// only fill up to max sample count
 function pushDecibelValues(decibelValues, analyserNode, maxSampleCount) {
     const newDecibalValues = new Uint8Array(analyserNode.frequencyBinCount);
     analyserNode.getByteFrequencyData(newDecibalValues);
@@ -44,7 +42,7 @@ const getUserMic = () => {
         audio: true,
     });
 };
-function setupContext(spectrogram) {
+function setupAudioContext(spectrogram) {
     return __awaiter(this, void 0, void 0, function* () {
         const { context, analyserNode, volume, gainNode } = spectrogram;
         const mic = yield getUserMic();
@@ -54,8 +52,8 @@ function setupContext(spectrogram) {
         const source = context.createMediaStreamSource(mic);
         source
             .connect(gainNode)
-            .connect(analyserNode)
-            .connect(context.destination);
+            .connect(analyserNode);
+        // .connect(context.destination)
     });
 }
 function setupEventListeners(spectrogram) {
@@ -81,7 +79,7 @@ function initializeSpectrogram(config, canvasConfig) {
         config,
     };
     setupEventListeners(spectrogram);
-    setupContext(spectrogram);
+    setupAudioContext(spectrogram);
     return spectrogram;
 }
 export { resize, initializeCanvas, initializeSpectrogram, getFrequencies, createSpectralTimeSeries };

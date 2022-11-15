@@ -3,17 +3,15 @@ function resize(canvas) {
     if (canvas === null) {
         return;
     }
-    canvas.width = canvas.clientWidth * window.devicePixelRatio;
-    canvas.height = canvas.clientHeight * window.devicePixelRatio;
+    canvas.width = canvas.clientWidth;
+    canvas.height = canvas.clientHeight;
+    // canvas.width = canvas.clientWidth * window.devicePixelRatio
+    // canvas.height = canvas.clientHeight * window.devicePixelRatio
 }
 function initializeCanvas(canvas, config) {
     canvas.width = config.width;
     canvas.height = config.height;
     const ctx = canvas.getContext("2d");
-    if (ctx != null) {
-        ctx.fillStyle = "green";
-        ctx.fillRect(10, 10, 150, 100);
-    }
     window.addEventListener('resize', () => resize(canvas));
 }
 function drawColumns(canvas, frequencyBinCount, decibelValues, frequencies) {
@@ -22,7 +20,7 @@ function drawColumns(canvas, frequencyBinCount, decibelValues, frequencies) {
         return;
     }
     canvasContext.clearRect(0, 0, canvas.width, canvas.height);
-    const columnWidth = 20;
+    const columnWidth = canvas.width / decibelValues.length;
     const binHeight = canvas.height / frequencyBinCount;
     decibelValues.forEach((decibels, index) => {
         drawColumn(canvas, canvasContext, frequencyBinCount, decibels, binHeight, index, columnWidth);
