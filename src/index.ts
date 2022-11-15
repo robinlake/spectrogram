@@ -1,5 +1,6 @@
 "use strict";
 import {Spectrogram, resize, initializeCanvas, initializeSpectrogram} from './spectrogram.js'
+import {drawVisualizer} from './canvas.js';
 
 window.onload = () => {
     const fftSize = 128;
@@ -12,11 +13,20 @@ window.onload = () => {
     const spectrogramConfig = {
         fftSize,
         sampleRate,
-        canvasConfig,
+    }
+    const canvas = <HTMLCanvasElement>document.getElementById('canvas')
+    if (canvas != null) {
+        initializeCanvas(canvas, canvasConfig);
+        resize(canvas);
     }
     const startButton = document.getElementById("startButton");
     if (startButton != null) {
-        startButton.addEventListener("click", () => initializeSpectrogram(spectrogramConfig));
+        startButton.addEventListener("click", () => {
+            const spectrogram = initializeSpectrogram(spectrogramConfig, canvasConfig);
+            if (canvas != null) {
+                drawVisualizer(spectrogram, canvas);
+            }
+        });
     }
 }
 
