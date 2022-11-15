@@ -26,25 +26,26 @@ function createCanvas(config, parentElement) {
 function stopAnimating(animationFrame) {
     window.cancelAnimationFrame(animationFrame);
 }
-function drawColumns(canvas, frequencyBinCount, decibelValues) {
-    const canvasContext = canvas.getContext('2d');
-    if (canvasContext === null) {
-        return;
-    }
-    canvasContext.clearRect(0, 0, canvas.width, canvas.height);
-    const columnWidth = canvas.width / decibelValues.length;
-    const binHeight = canvas.height / frequencyBinCount;
+function drawColumns(canvas, timeSeries) {
+    const { frequencyBinCount, decibelValues } = timeSeries;
+    const canvasContext = canvas.context;
+    canvasContext.clearRect(0, 0, canvas.canvasElement.width, canvas.canvasElement.height);
+    const columnWidth = canvas.canvasElement.width / decibelValues.length;
+    const binHeight = canvas.canvasElement.height / frequencyBinCount;
     decibelValues.forEach((decibels, index) => {
-        drawColumn(canvas, canvasContext, decibels, binHeight, index, columnWidth);
+        drawColumn(canvas, decibels, binHeight, index, columnWidth);
     });
 }
-function drawColumn(canvas, canvasContext, decibelValues, binHeight, index, columnWidth) {
+function drawColumn(canvas, decibelValues, binHeight, index, columnWidth) {
     decibelValues.forEach((decibelValue, i) => {
-        canvasContext.fillStyle = `hsl(${decibelValue}, 100%, 50%)`;
-        const yStart = canvas.height - (binHeight * (i + 1)); // canvas.height corresponds to bottom of the canvas
-        canvasContext.fillRect(index * columnWidth, yStart, columnWidth, binHeight);
+        canvas.context.fillStyle = `hsl(${decibelValue}, 100%, 50%)`;
+        const yStart = canvas.canvasElement.height - (binHeight * (i + 1)); // canvas.height corresponds to bottom of the canvas
+        canvas.context.fillRect(index * columnWidth, yStart, columnWidth, binHeight);
     });
 }
+// function getLightnessPercent(value: number, maxValue: number): number {
+//     return Math.round((value/maxValue) * 100)
+// }
 // function drawBars(canvas: HTMLCanvasElement, frequencyBinCount: number, decibelValues: Uint8Array, frequencies: number[]) {
 //     const canvasContext = canvas.getContext('2d')
 //     if (canvasContext === null) {
@@ -71,7 +72,6 @@ function drawColumn(canvas, canvasContext, decibelValues, binHeight, index, colu
 function drawCanvasFrame(timeSeries, canvas) {
     canvas.animationFrame = requestAnimationFrame(() => drawCanvasFrame(timeSeries, canvas));
     timeSeries.pushDecibelValues(timeSeries.decibelValues, timeSeries.analyserNode, timeSeries.maxSampleCount);
-    const frequencyBinCount = timeSeries.frequencyBinCount;
-    drawColumns(canvas.canvasElement, frequencyBinCount, timeSeries.decibelValues);
+    drawColumns(canvas, timeSeries);
 }
 export { resize, drawColumn, drawCanvasFrame, createCanvas };

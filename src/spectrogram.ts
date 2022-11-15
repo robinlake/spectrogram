@@ -19,11 +19,13 @@ interface SpectralTimeSeries {
     analyserNode: AnalyserNode;
     getFrequencies: (frequencyBinCount: number, maxFrequency: number) => number[];
     decibelValues: number[][];
+    maxDecibelValue: number;
     pushDecibelValues: (decibelValues: number[][], analyserNode: AnalyserNode, maxSampleCount: number) => number[][];
 }
 
 function createSpectralTimeSeries(maxFrequency: number, maxSampleCount: number, frequencyBinCount: number, analyserNode: AnalyserNode): SpectralTimeSeries {
     const decibelValues: number[][] = [[]];
+    const maxDecibelValue = 255;
     const timeSeries = {
         frequencyBinCount,
         maxFrequency,
@@ -31,6 +33,7 @@ function createSpectralTimeSeries(maxFrequency: number, maxSampleCount: number, 
         analyserNode,
         getFrequencies: () => getFrequencies(frequencyBinCount, maxFrequency),
         decibelValues,
+        maxDecibelValue,
         pushDecibelValues: (decibelValues: number[][], analyserNode: AnalyserNode, maxSampleCount: number) => pushDecibelValues(decibelValues, analyserNode, maxSampleCount),
     }
     return timeSeries;

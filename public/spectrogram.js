@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { resize } from './canvas.js';
 function createSpectralTimeSeries(maxFrequency, maxSampleCount, frequencyBinCount, analyserNode) {
     const decibelValues = [[]];
+    const maxDecibelValue = 255;
     const timeSeries = {
         frequencyBinCount,
         maxFrequency,
@@ -17,6 +18,7 @@ function createSpectralTimeSeries(maxFrequency, maxSampleCount, frequencyBinCoun
         analyserNode,
         getFrequencies: () => getFrequencies(frequencyBinCount, maxFrequency),
         decibelValues,
+        maxDecibelValue,
         pushDecibelValues: (decibelValues, analyserNode, maxSampleCount) => pushDecibelValues(decibelValues, analyserNode, maxSampleCount),
     };
     return timeSeries;
