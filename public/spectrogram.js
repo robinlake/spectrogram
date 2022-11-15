@@ -20,6 +20,7 @@ function createSpectralTimeSeries(maxFrequency, maxSampleCount, frequencyBinCoun
         decibelValues,
         maxDecibelValue,
         pushDecibelValues: (decibelValues, analyserNode, maxSampleCount) => pushDecibelValues(decibelValues, analyserNode, maxSampleCount),
+        clearDecibelValues,
     };
     return timeSeries;
 }
@@ -38,6 +39,9 @@ function pushDecibelValues(decibelValues, analyserNode, maxSampleCount) {
         decibelValues.shift();
     }
     return decibelValues;
+}
+function clearDecibelValues(timeSeries) {
+    timeSeries.decibelValues = [];
 }
 const getUserMic = () => {
     return navigator.mediaDevices.getUserMedia({

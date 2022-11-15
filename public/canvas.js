@@ -32,20 +32,26 @@ function drawColumns(canvas, timeSeries) {
     canvasContext.clearRect(0, 0, canvas.canvasElement.width, canvas.canvasElement.height);
     const columnWidth = canvas.canvasElement.width / decibelValues.length;
     const binHeight = canvas.canvasElement.height / frequencyBinCount;
+    // const maxActualValue = getMax(timeSeries.decibelValues)
     decibelValues.forEach((decibels, index) => {
+        // drawColumn(canvas, decibels, binHeight, index, columnWidth, maxActualValue)
         drawColumn(canvas, decibels, binHeight, index, columnWidth);
     });
 }
+// function getMax(a: number[][]): number{
+//     return Math.max(...a.map(e => Array.isArray(e) ? getMax(e) : e));
+//   }
+// function drawColumn(canvas: Canvas, decibelValues: number[], binHeight: number, index: number, columnWidth: number, maxActualValue: number) {
 function drawColumn(canvas, decibelValues, binHeight, index, columnWidth) {
     decibelValues.forEach((decibelValue, i) => {
-        canvas.context.fillStyle = `hsl(${decibelValue}, 100%, 50%)`;
+        // console.log(maxActualValue)
+        const h = 255 - decibelValue;
+        canvas.context.fillStyle = `hsl(${h}, 100%, 50%)`;
+        // canvas.context.fillStyle = `rgb(${(decibelValue / maxActualValue) * 255}, 0, 0)`
         const yStart = canvas.canvasElement.height - (binHeight * (i + 1)); // canvas.height corresponds to bottom of the canvas
         canvas.context.fillRect(index * columnWidth, yStart, columnWidth, binHeight);
     });
 }
-// function getLightnessPercent(value: number, maxValue: number): number {
-//     return Math.round((value/maxValue) * 100)
-// }
 // function drawBars(canvas: HTMLCanvasElement, frequencyBinCount: number, decibelValues: Uint8Array, frequencies: number[]) {
 //     const canvasContext = canvas.getContext('2d')
 //     if (canvasContext === null) {

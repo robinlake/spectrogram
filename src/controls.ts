@@ -20,6 +20,13 @@ function initializeControls(canvas: Canvas, timeSeries: SpectralTimeSeries) {
             }
         });
     }
+
+    const resetButton = document.getElementById("resetButton");
+    if (resetButton != null) {
+        resetButton.addEventListener("click", () => {
+            timeSeries.clearDecibelValues(timeSeries);
+        });
+    }
 }
 
 export {initializeControls}

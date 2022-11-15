@@ -25,6 +25,7 @@ body {
 }
 .controls .row {
   display: grid;
-  grid-template-columns: 40% 40%;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  grid-column-gap: 5px;
   justify-content: space-around;
 }

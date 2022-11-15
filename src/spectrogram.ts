@@ -21,6 +21,7 @@ interface SpectralTimeSeries {
     decibelValues: number[][];
     maxDecibelValue: number;
     pushDecibelValues: (decibelValues: number[][], analyserNode: AnalyserNode, maxSampleCount: number) => number[][];
+    clearDecibelValues: (timeSeries: SpectralTimeSeries) => void;
 }
 
 function createSpectralTimeSeries(maxFrequency: number, maxSampleCount: number, frequencyBinCount: number, analyserNode: AnalyserNode): SpectralTimeSeries {
@@ -35,6 +36,7 @@ function createSpectralTimeSeries(maxFrequency: number, maxSampleCount: number, 
         decibelValues,
         maxDecibelValue,
         pushDecibelValues: (decibelValues: number[][], analyserNode: AnalyserNode, maxSampleCount: number) => pushDecibelValues(decibelValues, analyserNode, maxSampleCount),
+        clearDecibelValues,
     }
     return timeSeries;
 }
@@ -55,6 +57,10 @@ function pushDecibelValues(decibelValues: number[][], analyserNode: AnalyserNode
         decibelValues.shift();
     }
     return decibelValues;
+}
+
+function clearDecibelValues(timeSeries: SpectralTimeSeries) {
+    timeSeries.decibelValues = [];
 }
 
 const getUserMic = (): Promise<MediaStream> => {

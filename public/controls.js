@@ -15,6 +15,12 @@ function initializeControls(canvas, timeSeries) {
             }
         });
     }
+    const resetButton = document.getElementById("resetButton");
+    if (resetButton != null) {
+        resetButton.addEventListener("click", () => {
+            timeSeries.clearDecibelValues(timeSeries);
+        });
+    }
 }
 export { initializeControls };
 // function loadControlsUI() {
