@@ -1,18 +1,32 @@
 import { getFrequencies } from './spectrogram.js';
-function resize(canvas) {
-    if (canvas === null) {
-        return;
-    }
-    canvas.width = canvas.clientWidth;
-    canvas.height = canvas.clientHeight;
-    // canvas.width = canvas.clientWidth * window.devicePixelRatio
-    // canvas.height = canvas.clientHeight * window.devicePixelRatio
+function resize(canvasElement, config) {
+    console.log("foo");
+    canvasElement.width = config.width;
+    canvasElement.height = config.height;
 }
-function initializeCanvas(canvas, config) {
-    canvas.width = config.width;
-    canvas.height = config.height;
-    const ctx = canvas.getContext("2d");
-    window.addEventListener('resize', () => resize(canvas));
+function createCanvas(config, parentElement) {
+    const canvasElement = document.createElement("canvas");
+    canvasElement.setAttribute("id", "canvas");
+    parentElement.appendChild(canvasElement);
+    const context = canvasElement.getContext("2d");
+    if (context === null) {
+        return null;
+    }
+    const canvas = {
+        config,
+        canvasElement,
+        context,
+        resize: () => resize(canvasElement, config),
+        startAnimating: drawCanvasFrame,
+        animationFrame: null,
+        stopAnimating,
+    };
+    canvas.resize();
+    window.addEventListener('resize', () => canvas.resize());
+    return canvas;
+}
+function stopAnimating(animationFrame) {
+    window.cancelAnimationFrame(animationFrame);
 }
 function drawColumns(canvas, frequencyBinCount, decibelValues, frequencies) {
     const canvasContext = canvas.getContext('2d');
@@ -57,15 +71,15 @@ function drawBar(x, y, height, barWidth, canvasContext) {
     canvasContext.fillRect(x, height - y, barWidth, y);
 }
 function drawCanvasFrame(timeSeries, canvas) {
-    requestAnimationFrame(() => drawCanvasFrame(timeSeries, canvas));
+    canvas.animationFrame = requestAnimationFrame(() => drawCanvasFrame(timeSeries, canvas));
     timeSeries.pushDecibelValues(timeSeries.decibelValues, timeSeries.analyserNode, timeSeries.maxSampleCount);
     const frequencyBinCount = timeSeries.frequencyBinCount;
     const maxFrequency = timeSeries.maxFrequency;
     const frequencies = getFrequencies(frequencyBinCount, maxFrequency);
-    const canvasContext = canvas.getContext('2d');
+    const canvasContext = canvas.canvasElement.getContext('2d');
     // if (canvasContext != null) {
     //     drawBars(canvas, canvasContext, frequencyBinCount, decibelValues, frequencies)
     // }
-    drawColumns(canvas, frequencyBinCount, timeSeries.decibelValues, frequencies);
+    drawColumns(canvas.canvasElement, frequencyBinCount, timeSeries.decibelValues, frequencies);
 }
-export { resize, initializeCanvas, drawColumn, drawCanvasFrame };
+export { resize, drawColumn, drawCanvasFrame, createCanvas };

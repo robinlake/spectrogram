@@ -1,4 +1,3 @@
-import { drawCanvasFrame } from './canvas.js';
 function stopSpectrogram() {
 }
 function initializeControls(canvas, timeSeries) {
@@ -6,7 +5,15 @@ function initializeControls(canvas, timeSeries) {
     if (startButton != null) {
         startButton.addEventListener("click", () => {
             if (canvas != null) {
-                drawCanvasFrame(timeSeries, canvas);
+                canvas.startAnimating(timeSeries, canvas);
+            }
+        });
+    }
+    const stopButton = document.getElementById("stopButton");
+    if (stopButton != null) {
+        stopButton.addEventListener("click", () => {
+            if (canvas != null && canvas.animationFrame != null) {
+                canvas.stopAnimating(canvas.animationFrame);
             }
         });
     }

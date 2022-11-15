@@ -8,27 +8,44 @@ interface Canvas {
     config: CanvasConfig;
     canvasElement: HTMLCanvasElement;
     context: CanvasRenderingContext2D;
-
+    // resize?: () => void;
+    resize: () => void;
+    animationFrame: number | null;
+    startAnimating: (timeSeries: SpectralTimeSeries, canvas: Canvas) => void;
+    stopAnimating: (animationFrame: number) => void;
 }
 
-function resize(canvas: HTMLCanvasElement) {
-    if (canvas === null) {
-        return
-    }
-    canvas.width = canvas.clientWidth
-    canvas.height = canvas.clientHeight
-    // canvas.width = canvas.clientWidth * window.devicePixelRatio
-    // canvas.height = canvas.clientHeight * window.devicePixelRatio
+function resize(canvasElement: HTMLCanvasElement, config: CanvasConfig) {
+    console.log("foo")
+    canvasElement.width = config.width;
+    canvasElement.height = config.height;
   }
 
-
-function initializeCanvas(canvas: HTMLCanvasElement, config: CanvasConfig) {
-    canvas.width = config.width;
-    canvas.height = config.height;
-    const ctx = canvas.getContext("2d");
-    window.addEventListener('resize', () => resize(canvas))
+function createCanvas(config: CanvasConfig, parentElement: HTMLElement): Canvas | null {
+    const canvasElement = document.createElement("canvas");
+    canvasElement.setAttribute("id", "canvas");
+    parentElement.appendChild(canvasElement);
+    const context = canvasElement.getContext("2d");
+    if (context === null) {
+        return null;
+    }
+    const canvas: Canvas = {
+        config,
+        canvasElement,
+        context,
+        resize: () => resize(canvasElement, config),
+        startAnimating: drawCanvasFrame,
+        animationFrame: null,
+        stopAnimating,
+    }
+    canvas.resize();
+    window.addEventListener('resize', () => canvas.resize());
+    return canvas;
 }
 
+function stopAnimating(animationFrame: number) {
+    window.cancelAnimationFrame(animationFrame);
+}
 
 function drawColumns(canvas: HTMLCanvasElement,  frequencyBinCount: number, decibelValues: number[][], frequencies: number[]) {
     const canvasContext = canvas.getContext('2d')
@@ -81,20 +98,20 @@ function drawBar(x: number, y: number, height: number, barWidth: number, canvasC
 
 }
 
-function drawCanvasFrame(timeSeries: SpectralTimeSeries, canvas: HTMLCanvasElement) {
-    requestAnimationFrame(() => drawCanvasFrame(timeSeries, canvas))
+function drawCanvasFrame(timeSeries: SpectralTimeSeries, canvas: Canvas) {
+    canvas.animationFrame = requestAnimationFrame(() => drawCanvasFrame(timeSeries, canvas))
     timeSeries.pushDecibelValues(timeSeries.decibelValues, timeSeries.analyserNode, timeSeries.maxSampleCount);
   
     const frequencyBinCount = timeSeries.frequencyBinCount
     const maxFrequency = timeSeries.maxFrequency;
     const frequencies = getFrequencies(frequencyBinCount, maxFrequency);
   
-    const canvasContext = canvas.getContext('2d')
+    const canvasContext = canvas.canvasElement.getContext('2d')
 
     // if (canvasContext != null) {
     //     drawBars(canvas, canvasContext, frequencyBinCount, decibelValues, frequencies)
     // }
-    drawColumns(canvas, frequencyBinCount, timeSeries.decibelValues, frequencies);
-  }
+    drawColumns(canvas.canvasElement, frequencyBinCount, timeSeries.decibelValues, frequencies);
+}
 
-export {resize, initializeCanvas, drawColumn, CanvasConfig, drawCanvasFrame};
+export {resize, drawColumn, CanvasConfig, drawCanvasFrame, createCanvas, Canvas};

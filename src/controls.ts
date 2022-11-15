@@ -1,18 +1,27 @@
 import {Spectrogram, resize, initializeSpectrogram, createSpectralTimeSeries, SpectrogramConfig, SpectralTimeSeries} from './spectrogram.js'
-import {drawCanvasFrame} from './canvas.js';
+import {drawCanvasFrame, Canvas} from './canvas.js';
 
 
 function stopSpectrogram() {
 
 }
 
-function initializeControls(canvas: HTMLCanvasElement, timeSeries: SpectralTimeSeries) {
+function initializeControls(canvas: Canvas, timeSeries: SpectralTimeSeries) {
 
     const startButton = document.getElementById("startButton");
     if (startButton != null) {
         startButton.addEventListener("click", () => {
             if (canvas != null) {
-                drawCanvasFrame(timeSeries, canvas);
+                canvas.startAnimating(timeSeries, canvas);
+            }
+        });
+    }
+
+    const stopButton = document.getElementById("stopButton");
+    if (stopButton != null) {
+        stopButton.addEventListener("click", () => {
+            if (canvas != null && canvas.animationFrame != null) {
+                canvas.stopAnimating(canvas.animationFrame);
             }
         });
     }
