@@ -1,5 +1,5 @@
-import {Spectrogram, resize, initializeCanvas, initializeSpectrogram, createSpectralTimeSeries, SpectrogramConfig, SpectralTimeSeries} from './spectrogram.js'
-import {drawCanvasFrame, CanvasConfig} from './canvas.js';
+import {Spectrogram, resize, initializeSpectrogram, createSpectralTimeSeries, SpectrogramConfig, SpectralTimeSeries} from './spectrogram.js'
+import {drawCanvasFrame} from './canvas.js';
 
 
 function stopSpectrogram() {

@@ -1,4 +1,4 @@
-import {resize, initializeCanvas, drawColumn, CanvasConfig} from './canvas.js';
+import {resize, drawColumn} from './canvas.js';
 interface Spectrogram {
     volume: HTMLInputElement;
     analyserNode: AnalyserNode;
@@ -83,7 +83,7 @@ function setupEventListeners(spectrogram: Spectrogram) {
       })
   }
 
-function initializeSpectrogram(config: SpectrogramConfig, canvasConfig: CanvasConfig): Spectrogram {
+function initializeSpectrogram(config: SpectrogramConfig): Spectrogram {
     const {sampleRate, fftSize} = config;
     
     const context = new AudioContext({sampleRate});
@@ -104,4 +104,4 @@ function initializeSpectrogram(config: SpectrogramConfig, canvasConfig: CanvasCo
     return spectrogram;
 }
 
-  export {Spectrogram, resize, initializeCanvas, initializeSpectrogram, getFrequencies, createSpectralTimeSeries, SpectralTimeSeries, SpectrogramConfig}
+  export {Spectrogram, resize, initializeSpectrogram, getFrequencies, createSpectralTimeSeries, SpectralTimeSeries, SpectrogramConfig}

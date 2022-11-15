@@ -4,6 +4,13 @@ interface CanvasConfig {
     width: number;
 }
 
+interface Canvas {
+    config: CanvasConfig;
+    canvasElement: HTMLCanvasElement;
+    context: CanvasRenderingContext2D;
+
+}
+
 function resize(canvas: HTMLCanvasElement) {
     if (canvas === null) {
         return

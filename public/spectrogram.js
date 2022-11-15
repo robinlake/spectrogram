@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { resize, initializeCanvas } from './canvas.js';
+import { resize } from './canvas.js';
 function createSpectralTimeSeries(maxFrequency, maxSampleCount, frequencyBinCount, analyserNode) {
     const decibelValues = [[]];
     const timeSeries = {
@@ -65,7 +65,7 @@ function setupEventListeners(spectrogram) {
         }
     });
 }
-function initializeSpectrogram(config, canvasConfig) {
+function initializeSpectrogram(config) {
     const { sampleRate, fftSize } = config;
     const context = new AudioContext({ sampleRate });
     const analyserNode = new AnalyserNode(context, { fftSize });
@@ -82,4 +82,4 @@ function initializeSpectrogram(config, canvasConfig) {
     setupAudioContext(spectrogram);
     return spectrogram;
 }
-export { resize, initializeCanvas, initializeSpectrogram, getFrequencies, createSpectralTimeSeries };
+export { resize, initializeSpectrogram, getFrequencies, createSpectralTimeSeries };

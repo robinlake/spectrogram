@@ -1,6 +1,7 @@
 "use strict";
 import {initializeControls} from './controls.js';
-import {Spectrogram, resize, initializeCanvas, initializeSpectrogram, createSpectralTimeSeries, SpectrogramConfig} from './spectrogram.js'
+import {initializeCanvas} from './canvas.js';
+import {Spectrogram, resize, initializeSpectrogram, createSpectralTimeSeries, SpectrogramConfig} from './spectrogram.js'
 
 window.onload = () => {
     const fftSize = 128;
@@ -20,7 +21,7 @@ window.onload = () => {
         initializeCanvas(canvas, canvasConfig);
         resize(canvas);
     }
-    const spectrogram = initializeSpectrogram(spectrogramConfig, canvasConfig);
+    const spectrogram = initializeSpectrogram(spectrogramConfig);
     const timeSeries = createSpectralTimeSeries(spectrogramConfig.sampleRate, maxSampleCount, spectrogramConfig.fftSize / 2, spectrogram.analyserNode);
     timeSeries.pushDecibelValues(timeSeries.decibelValues, spectrogram.analyserNode, timeSeries.maxSampleCount);
 
