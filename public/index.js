@@ -3,9 +3,9 @@ import { initializeControls } from './controls.js';
 import { createCanvas } from './canvas.js';
 import { initializeSpectrogram, createSpectralTimeSeries } from './spectrogram.js';
 window.onload = () => {
-    const fftSize = 128;
+    const fftSize = 256;
     const sampleRate = 4000;
-    const maxSampleCount = 400;
+    const maxSampleCount = 200;
     const canvasConfig = {
         height: 500,
         width: 500,
