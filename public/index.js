@@ -6,9 +6,11 @@ window.onload = () => {
     const fftSize = 256;
     const sampleRate = 4000;
     const maxSampleCount = 200;
+    const width = .8;
+    const height = .7;
     const canvasConfig = {
-        height: 500,
-        width: 500,
+        height: height,
+        width: width,
     };
     const spectrogramConfig = {
         fftSize,

@@ -1,6 +1,8 @@
 function resize(canvasElement, config) {
-    canvasElement.width = config.width;
-    canvasElement.height = config.height;
+    const width = window.innerWidth * config.width;
+    const height = Math.min(window.innerHeight * config.height, width);
+    canvasElement.width = width;
+    canvasElement.height = height;
 }
 function createCanvas(config, parentElement) {
     const canvasElement = document.createElement("canvas");
