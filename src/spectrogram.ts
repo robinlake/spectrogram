@@ -1,4 +1,4 @@
-import {resize, drawColumn} from './canvas.js';
+import {resize} from './canvas.js';
 interface Spectrogram {
     volume: HTMLInputElement;
     analyserNode: AnalyserNode;
@@ -61,7 +61,7 @@ const getUserMic = (): Promise<MediaStream> => {
 }
 
 async function setupAudioContext(spectrogram: Spectrogram) {
-    const {context, analyserNode, volume, gainNode} = spectrogram;
+    const {context, analyserNode, gainNode} = spectrogram;
     const mic = await getUserMic();
     if (context.state === 'suspended') {
         await context.resume()

@@ -1,5 +1,3 @@
-function stopSpectrogram() {
-}
 function initializeControls(canvas, timeSeries) {
     const startButton = document.getElementById("startButton");
     if (startButton != null) {

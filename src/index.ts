@@ -1,7 +1,7 @@
 "use strict";
 import {initializeControls} from './controls.js';
 import {createCanvas} from './canvas.js';
-import {Spectrogram, resize, initializeSpectrogram, createSpectralTimeSeries, SpectrogramConfig} from './spectrogram.js'
+import {initializeSpectrogram, createSpectralTimeSeries} from './spectrogram.js'
 
 window.onload = () => {
     const fftSize = 128;

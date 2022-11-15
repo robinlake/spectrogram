@@ -44,7 +44,7 @@ const getUserMic = () => {
 };
 function setupAudioContext(spectrogram) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { context, analyserNode, volume, gainNode } = spectrogram;
+        const { context, analyserNode, gainNode } = spectrogram;
         const mic = yield getUserMic();
         if (context.state === 'suspended') {
             yield context.resume();
