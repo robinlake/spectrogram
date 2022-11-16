@@ -25,7 +25,7 @@ window.onload = () => {
     timeSeries.pushDecibelValues(timeSeries.decibelValues, spectrogram.analyserNode, timeSeries.maxSampleCount);
 
     if (canvas?.canvasElement) {
-        initializeControls(canvas, timeSeries);
+        initializeControls(canvas, timeSeries, spectrogram);
     }
 }
 

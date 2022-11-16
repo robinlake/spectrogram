@@ -4,7 +4,10 @@ interface Spectrogram {
     analyserNode: AnalyserNode;
     context: AudioContext;
     gainNode: GainNode;
+    source?: MediaStreamAudioSourceNode;
     config: SpectrogramConfig;
+    connectAudioDestination: (spectrogram: Spectrogram) => void;
+    disconnectAudioDestination: (spectrogram: Spectrogram) => void;
 }
 
 interface SpectrogramConfig {
@@ -79,18 +82,22 @@ async function setupAudioContext(spectrogram: Spectrogram) {
     source
     .connect(gainNode)
     .connect(analyserNode)
-    // .connect(context.destination)
+    spectrogram.source = source;
 }
 
-function setupEventListeners(spectrogram: Spectrogram) {
-    const {volume, gainNode, context} = spectrogram;
-    volume.addEventListener('input', e => {
-        if (e.target != null) {
-            const value = parseFloat((e.target as HTMLInputElement).value)
-            gainNode.gain.setTargetAtTime(value, context.currentTime, .01)
-        }
-      })
-  }
+function connectAudioDestination(spectrogram: Spectrogram) {
+    if (!spectrogram.source) {
+        return;
+    }
+    spectrogram.source.connect(spectrogram.context.destination);
+}
+
+function disconnectAudioDestination(spectrogram: Spectrogram) {
+    if (!spectrogram.source) {
+        return;
+    }
+    spectrogram.source.disconnect(spectrogram.context.destination);
+}
 
 function initializeSpectrogram(config: SpectrogramConfig): Spectrogram {
     const {sampleRate, fftSize} = config;
@@ -99,18 +106,18 @@ function initializeSpectrogram(config: SpectrogramConfig): Spectrogram {
     const analyserNode = new AnalyserNode(context, { fftSize })
     const volume = <HTMLInputElement>document.getElementById('volume')
     const gainNode = new GainNode(context, {gain: Number(volume.value)})
-
     const spectrogram = {
         analyserNode,
         context,
         volume,
         gainNode,
         config,
+        connectAudioDestination,
+        disconnectAudioDestination,
     }
-    setupEventListeners(spectrogram);
     setupAudioContext(spectrogram);
-
     return spectrogram;
+
 }
 
-  export {Spectrogram, resize, initializeSpectrogram, getFrequencies, createSpectralTimeSeries, SpectralTimeSeries, SpectrogramConfig}
+export {Spectrogram, resize, initializeSpectrogram, getFrequencies, createSpectralTimeSeries, SpectralTimeSeries, SpectrogramConfig}

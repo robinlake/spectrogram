@@ -1,4 +1,11 @@
-function initializeControls(canvas, timeSeries) {
+function initializeControls(canvas, timeSeries, spectrogram) {
+    const { volume, gainNode, context } = spectrogram;
+    volume.addEventListener('input', e => {
+        if (e.target != null) {
+            const value = parseFloat(e.target.value);
+            gainNode.gain.setTargetAtTime(value, context.currentTime, .01);
+        }
+    });
     const startButton = document.getElementById("startButton");
     if (startButton != null) {
         startButton.addEventListener("click", () => {
@@ -19,6 +26,17 @@ function initializeControls(canvas, timeSeries) {
     if (resetButton != null) {
         resetButton.addEventListener("click", () => {
             timeSeries.clearDecibelValues(timeSeries);
+        });
+    }
+    const hearAudio = document.getElementById("hearAudio");
+    if (hearAudio != null) {
+        hearAudio.addEventListener("change", function () {
+            if (this.checked) {
+                spectrogram.connectAudioDestination(spectrogram);
+            }
+            else {
+                spectrogram.disconnectAudioDestination(spectrogram);
+            }
         });
     }
 }

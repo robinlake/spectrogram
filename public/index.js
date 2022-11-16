@@ -22,6 +22,6 @@ window.onload = () => {
     const timeSeries = createSpectralTimeSeries(spectrogramConfig.sampleRate, maxSampleCount, spectrogramConfig.fftSize / 2, spectrogram.analyserNode);
     timeSeries.pushDecibelValues(timeSeries.decibelValues, spectrogram.analyserNode, timeSeries.maxSampleCount);
     if (canvas === null || canvas === void 0 ? void 0 : canvas.canvasElement) {
-        initializeControls(canvas, timeSeries);
+        initializeControls(canvas, timeSeries, spectrogram);
     }
 };

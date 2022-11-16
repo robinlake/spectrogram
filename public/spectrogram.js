@@ -59,17 +59,20 @@ function setupAudioContext(spectrogram) {
         source
             .connect(gainNode)
             .connect(analyserNode);
-        // .connect(context.destination)
+        spectrogram.source = source;
     });
 }
-function setupEventListeners(spectrogram) {
-    const { volume, gainNode, context } = spectrogram;
-    volume.addEventListener('input', e => {
-        if (e.target != null) {
-            const value = parseFloat(e.target.value);
-            gainNode.gain.setTargetAtTime(value, context.currentTime, .01);
-        }
-    });
+function connectAudioDestination(spectrogram) {
+    if (!spectrogram.source) {
+        return;
+    }
+    spectrogram.source.connect(spectrogram.context.destination);
+}
+function disconnectAudioDestination(spectrogram) {
+    if (!spectrogram.source) {
+        return;
+    }
+    spectrogram.source.disconnect(spectrogram.context.destination);
 }
 function initializeSpectrogram(config) {
     const { sampleRate, fftSize } = config;
@@ -83,8 +86,9 @@ function initializeSpectrogram(config) {
         volume,
         gainNode,
         config,
+        connectAudioDestination,
+        disconnectAudioDestination,
     };
-    setupEventListeners(spectrogram);
     setupAudioContext(spectrogram);
     return spectrogram;
 }

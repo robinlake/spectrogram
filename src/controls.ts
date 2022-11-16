@@ -1,7 +1,15 @@
-import {SpectralTimeSeries} from './spectrogram.js'
+import {SpectralTimeSeries, Spectrogram} from './spectrogram.js'
 import {Canvas} from './canvas.js';
 
-function initializeControls(canvas: Canvas, timeSeries: SpectralTimeSeries) {
+function initializeControls(canvas: Canvas, timeSeries: SpectralTimeSeries, spectrogram: Spectrogram) {
+
+    const {volume, gainNode, context} = spectrogram;
+    volume.addEventListener('input', e => {
+        if (e.target != null) {
+            const value = parseFloat((e.target as HTMLInputElement).value)
+            gainNode.gain.setTargetAtTime(value, context.currentTime, .01)
+        }
+      })
 
     const startButton = document.getElementById("startButton");
     if (startButton != null) {
@@ -25,6 +33,17 @@ function initializeControls(canvas: Canvas, timeSeries: SpectralTimeSeries) {
     if (resetButton != null) {
         resetButton.addEventListener("click", () => {
             timeSeries.clearDecibelValues(timeSeries);
+        });
+    }
+    const hearAudio = <HTMLInputElement>document.getElementById("hearAudio");
+    if (hearAudio != null) {
+        hearAudio.addEventListener("change", function()  {
+            if (this.checked) {
+                spectrogram.connectAudioDestination(spectrogram);
+            } else {
+                spectrogram.disconnectAudioDestination(spectrogram);
+
+            }
         });
     }
 }
