@@ -1,4 +1,4 @@
-import {SpectralTimeSeries} from './spectrogram.js';
+import {SpectralTimeSeries} from './timeseries.js';
 interface CanvasConfig {
     height: number;
     width: number;

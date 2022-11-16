@@ -58,6 +58,14 @@ function initializeControls(canvas: Canvas, spectrogram: Spectrogram, legendCanv
             }
         });
     }
+
+    const maxRowValues = <HTMLInputElement>document.getElementById("maxRowValues");
+    if (maxRowValues != null) {
+        maxRowValues.addEventListener("click", function()  {
+            console.log(spectrogram.timeSeries.getMaxRowValues(spectrogram.timeSeries.decibelValues));
+            console.log("sample max values: ", spectrogram.timeSeries.getMaxRowValues([[1,2,3], [1,2,4], [1,3,3]]))
+        });
+    }
 }
 
 export {initializeControls}

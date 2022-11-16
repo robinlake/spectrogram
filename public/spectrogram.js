@@ -7,41 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-function createSpectralTimeSeries(maxFrequency, maxSampleCount, frequencyBinCount, analyserNode) {
-    const decibelValues = [[]];
-    const maxDecibelValue = 255;
-    const timeSeries = {
-        frequencyBinCount,
-        maxFrequency,
-        maxSampleCount,
-        analyserNode,
-        getFrequencies: () => getFrequencies(frequencyBinCount, maxFrequency),
-        decibelValues,
-        maxDecibelValue,
-        pushDecibelValues: (decibelValues, analyserNode, maxSampleCount) => pushDecibelValues(decibelValues, analyserNode, maxSampleCount),
-        clearDecibelValues,
-    };
-    return timeSeries;
-}
-function getFrequencies(frequencyBinCount, maxFrequency) {
-    const frequencies = new Array(frequencyBinCount);
-    for (let i = 0; i < frequencyBinCount; i++) {
-        frequencies[i] = ((i + 1) / frequencyBinCount) * maxFrequency;
-    }
-    return frequencies;
-}
-function pushDecibelValues(decibelValues, analyserNode, maxSampleCount) {
-    const newDecibalValues = new Uint8Array(analyserNode.frequencyBinCount);
-    analyserNode.getByteFrequencyData(newDecibalValues);
-    decibelValues.push(new Array(...newDecibalValues));
-    if (decibelValues.length > maxSampleCount) {
-        decibelValues.shift();
-    }
-    return decibelValues;
-}
-function clearDecibelValues(timeSeries) {
-    timeSeries.decibelValues = [];
-}
+import { createSpectralTimeSeries } from './timeseries.js';
 const getUserMic = () => {
     return navigator.mediaDevices.getUserMedia({
         audio: true,
