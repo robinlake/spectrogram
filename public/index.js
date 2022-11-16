@@ -1,6 +1,6 @@
 "use strict";
 import { initializeControls } from './controls.js';
-import { createSpectrogramCanvas, createLegendCanvas, createOscilloscopeCanvas } from './canvas.js';
+import { createSpectrogramCanvas, createLegendCanvas, createOscilloscopeCanvas, createFrequencyCanvas } from './canvas.js';
 import { initializeSpectrogram } from './spectrogram.js';
 window.onload = () => {
     const fftSize = 256;
@@ -25,9 +25,10 @@ window.onload = () => {
     const spectrogramCanvas = createSpectrogramCanvas(spectrogramCanvasConfig, canvasContainer);
     const legendCanvas = createLegendCanvas(legendCanvasConfig, canvasContainer);
     const oscilloscopeCanvas = createOscilloscopeCanvas(spectrogramCanvasConfig, canvasContainer);
+    const frequencyCanvas = createFrequencyCanvas(spectrogramCanvasConfig, canvasContainer);
     const spectrogram = initializeSpectrogram(spectrogramConfig);
     // canvas?.drawLegend(canvas, timeSeries);
-    if (spectrogramCanvas && legendCanvas && oscilloscopeCanvas) {
-        initializeControls(spectrogramCanvas, spectrogram, legendCanvas, oscilloscopeCanvas);
+    if (spectrogramCanvas && legendCanvas && oscilloscopeCanvas && frequencyCanvas) {
+        initializeControls(spectrogramCanvas, spectrogram, legendCanvas, oscilloscopeCanvas, frequencyCanvas);
     }
 };

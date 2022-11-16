@@ -39,6 +39,10 @@ function createOscilloscopeCanvas(config: CanvasConfig, parentElement: HTMLEleme
     return createCanvas(config, parentElement, drawOscilloscopeCanvasFrame)
 }
 
+function createFrequencyCanvas(config: CanvasConfig, parentElement: HTMLElement): Canvas | null {
+    return createCanvas(config, parentElement, drawFrequencyCanvasFrame)
+}
+
 function createCanvas(config: CanvasConfig, 
     parentElement: HTMLElement, 
     startAnimating: (canvas: Canvas, timeSeries: SpectralTimeSeries) => void,
@@ -77,31 +81,13 @@ function drawColumns(canvas: Canvas,  timeSeries: SpectralTimeSeries) {
     const columnWidth = canvas.canvasElement.width / decibelValues.length;
     const binHeight = canvas.canvasElement.height / frequencyBinCount;
     
-    // const maxActualValue = getMax(timeSeries.decibelValues)
     decibelValues.forEach((decibels, index) => {
-        // drawColumn(canvas, decibels, binHeight, index, columnWidth, maxActualValue)
         drawColumn(canvas, decibels, binHeight, index, columnWidth)
     })
 
 }
 
-// function drawOscilloscopeColumns(canvas: Canvas,  timeSeries: SpectralTimeSeries) {
-//     const {frequencyBinCount, timeDomainValues} = timeSeries;
-//     const canvasContext = canvas.context;
-//     canvasContext.clearRect(0, 0, canvas.canvasElement.width, canvas.canvasElement.height)
-//     const columnWidth = canvas.canvasElement.width / timeDomainValues.length;
-//     // const maxValue = (timeSeries.getMaxRowValues(timeDomainValues)).reduce((x, y) => y > x ? y : x)
-//     // const binHeight = canvas.canvasElement.height / maxValue;
-//     const binHeight = canvas.canvasElement.height / frequencyBinCount;
-    
-//     // const maxActualValue = getMax(timeSeries.timeDomainValues)
-//     timeDomainValues.forEach((values, index) => {
-//         // drawColumn(canvas, values, binHeight, index, columnWidth, maxActualValue)
-//         drawColumn(canvas, values, binHeight, index, columnWidth)
-//     })
-
-// }
-function drawOscilloscopeStuff(canvas: Canvas,  timeSeries: SpectralTimeSeries) {
+function drawOscilloscopeVisual(canvas: Canvas,  timeSeries: SpectralTimeSeries) {
     const {timeDomainValues} = timeSeries;
     const canvasContext = canvas.context;
     canvasContext.clearRect(0, 0, canvas.canvasElement.width, canvas.canvasElement.height)
@@ -131,18 +117,10 @@ function drawOscilloscopeStuff(canvas: Canvas,  timeSeries: SpectralTimeSeries) 
         canvasContext.lineTo(canvas.canvasElement.width, canvas.canvasElement.height/2);
         canvasContext.stroke();
 }
-
-// function getMax(a: number[][]): number{
-//     return Math.max(...a.map(e => Array.isArray(e) ? getMax(e) : e));
-//   }
-
-// function drawColumn(canvas: Canvas, decibelValues: number[], binHeight: number, index: number, columnWidth: number, maxActualValue: number) {
 function drawColumn(canvas: Canvas, decibelValues: number[], binHeight: number, index: number, columnWidth: number) {
     decibelValues.forEach((decibelValue, i) => {
-        // console.log(maxActualValue)
         const h = 255 - decibelValue;
         canvas.context.fillStyle = `hsl(${h}, 100%, 50%)`
-        // canvas.context.fillStyle = `rgb(${(decibelValue / maxActualValue) * 255}, 0, 0)`
         const yStart = canvas.canvasElement.height - (binHeight * (i + 1)) // canvas.height corresponds to bottom of the canvas
         canvas.context.fillRect(index * columnWidth, yStart, columnWidth, binHeight)
     })
@@ -167,34 +145,45 @@ function clearCanvas(canvas: Canvas) {
 }
 
 
-// function drawBars(canvas: HTMLCanvasElement, frequencyBinCount: number, decibelValues: Uint8Array, frequencies: number[]) {
-//     const canvasContext = canvas.getContext('2d')
-//     if (canvasContext === null) {
-//         return
-//     }
-//     const width = canvas.width
-//     const height = canvas.height
-//     const barWidth = width / frequencyBinCount
-  
-//     canvasContext.clearRect(0, 0, width, height)
-  
-//     decibelValues.forEach((item, index) => {
-//         const y = item / 255 * height / 2
-//         const x = barWidth * index
-    
-//         drawBar(x, y, height, barWidth, canvasContext)
-//         if (item > 10) {
-//             canvasContext.strokeText(frequencies[index].toString(), x, height - y)
-//             canvasContext.strokeText(decibelValues[index].toString(), x, height - (y + 30))
-//         }
-//     })
-// }
-  
-// function drawBar(x: number, y: number, height: number, barWidth: number, canvasContext: CanvasRenderingContext2D) {
-//     canvasContext.fillStyle = `hsl(${y / height * 400}, 100%, 50%)`
-//     canvasContext.fillRect(x, height - y, barWidth, y)
+function drawBars(canvas: Canvas, timeSeries: SpectralTimeSeries) {
+    const {frequencyBinCount, decibelValues} = timeSeries;
+    const canvasContext = canvas.context
+    const frequencies = timeSeries.getFrequencies(frequencyBinCount, timeSeries.maxFrequency);
 
-// }
+    const width = canvas.canvasElement.width
+    const height = canvas.canvasElement.height
+    const barWidth = width / frequencyBinCount
+  
+    canvasContext.clearRect(0, 0, width, height)
+  
+    const mostRecentDecibelValues = decibelValues[decibelValues.length - 1];
+    const copy = mostRecentDecibelValues.slice();
+    const sorted = copy.sort((a, b) => a < b ? 1 : -1)
+    const labelCutoffValue = sorted[20]
+
+    mostRecentDecibelValues.forEach((item, index) => {
+        const y = item / 255 * height / 2
+        const x = barWidth * index
+    
+        // check if current value is the max of the 3 preceding and 3 following values, accounting for out of bound array indices
+        const localMax = isLocalMaximum(item, mostRecentDecibelValues.slice(Math.max(0, index- 3), Math.min(index + 3, mostRecentDecibelValues.length - 1)))
+        drawBar(x, y, height, barWidth, canvasContext)
+        if (item > labelCutoffValue && localMax ) {
+            canvasContext.strokeText(frequencies[index].toString(), x, height - y)
+            // canvasContext.strokeText(decibelValues[index].toString(), x, height - (y + 30))
+        }
+    })
+}
+
+function isLocalMaximum(value: number, range: number[]) {
+    return value >= range.reduce((x, y) => x > y ? x : y)
+}
+  
+function drawBar(x: number, y: number, height: number, barWidth: number, canvasContext: CanvasRenderingContext2D) {
+    canvasContext.fillStyle = `hsl(${y / height * 400}, 100%, 50%)`
+    canvasContext.fillRect(x, height - y, barWidth, y)
+
+}
 
 function drawSpectrogramCanvasFrame(canvas: Canvas, timeSeries: SpectralTimeSeries) {
     canvas.animationFrame = requestAnimationFrame(() => drawSpectrogramCanvasFrame(canvas, timeSeries))
@@ -208,7 +197,14 @@ function drawOscilloscopeCanvasFrame(canvas: Canvas, timeSeries: SpectralTimeSer
     timeSeries.pushTimeDomainValues(timeSeries.timeDomainValues, timeSeries.analyserNode, timeSeries.maxSampleCount);
   
     // drawOscilloscopeColumns(canvas, timeSeries);
-    drawOscilloscopeStuff(canvas, timeSeries);
+    drawOscilloscopeVisual(canvas, timeSeries);
 }
 
-export {resize, drawColumn, CanvasConfig, createSpectrogramCanvas, Canvas, createLegendCanvas, createOscilloscopeCanvas};
+function drawFrequencyCanvasFrame(canvas: Canvas, timeSeries: SpectralTimeSeries) {
+    canvas.animationFrame = requestAnimationFrame(() => drawFrequencyCanvasFrame(canvas, timeSeries))
+    timeSeries.pushDecibelValues(timeSeries.decibelValues, timeSeries.analyserNode, timeSeries.maxSampleCount);
+  
+    drawBars(canvas, timeSeries);
+}
+
+export {resize, drawColumn, CanvasConfig, createSpectrogramCanvas, Canvas, createLegendCanvas, createOscilloscopeCanvas, createFrequencyCanvas};

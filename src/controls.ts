@@ -1,7 +1,7 @@
 import {Spectrogram} from './spectrogram.js'
 import {Canvas} from './canvas.js';
 
-function initializeControls(spectrogramCanvas: Canvas, spectrogram: Spectrogram, legendCanvas: Canvas, oscilloscopeCanvas: Canvas) {
+function initializeControls(spectrogramCanvas: Canvas, spectrogram: Spectrogram, legendCanvas: Canvas, oscilloscopeCanvas: Canvas, frequencyCanvas: Canvas) {
 
     const {volume, gainNode, context, timeSeries} = spectrogram;
     volume.addEventListener('input', e => {
@@ -70,6 +70,22 @@ function initializeControls(spectrogramCanvas: Canvas, spectrogram: Spectrogram,
                  if (oscilloscopeCanvas?.animationFrame) {
                      oscilloscopeCanvas.stopAnimating(oscilloscopeCanvas.animationFrame);
                      oscilloscopeCanvas.clearCanvas(oscilloscopeCanvas);
+                 }
+
+            }
+        });
+    }
+
+    const frequency = <HTMLInputElement>document.getElementById("frequency");
+    if (frequency != null) {
+        frequency.addEventListener("change", function()  {
+            if (this.checked) {
+                frequencyCanvas.startAnimating(frequencyCanvas, timeSeries);
+            }
+             else {
+                 if (frequencyCanvas?.animationFrame) {
+                     frequencyCanvas.stopAnimating(frequencyCanvas.animationFrame);
+                     frequencyCanvas.clearCanvas(frequencyCanvas);
                  }
 
             }

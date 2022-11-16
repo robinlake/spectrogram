@@ -23,7 +23,7 @@ function createSpectralTimeSeries(maxFrequency, maxSampleCount, frequencyBinCoun
 function getFrequencies(frequencyBinCount, maxFrequency) {
     const frequencies = new Array(frequencyBinCount);
     for (let i = 0; i < frequencyBinCount; i++) {
-        frequencies[i] = ((i + 1) / frequencyBinCount) * maxFrequency;
+        frequencies[i] = Math.round(((i + 1) / frequencyBinCount) * maxFrequency);
     }
     return frequencies;
 }

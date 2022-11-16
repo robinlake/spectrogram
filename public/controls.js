@@ -1,4 +1,4 @@
-function initializeControls(spectrogramCanvas, spectrogram, legendCanvas, oscilloscopeCanvas) {
+function initializeControls(spectrogramCanvas, spectrogram, legendCanvas, oscilloscopeCanvas, frequencyCanvas) {
     const { volume, gainNode, context, timeSeries } = spectrogram;
     volume.addEventListener('input', e => {
         if (e.target != null) {
@@ -61,6 +61,20 @@ function initializeControls(spectrogramCanvas, spectrogram, legendCanvas, oscill
                 if (oscilloscopeCanvas === null || oscilloscopeCanvas === void 0 ? void 0 : oscilloscopeCanvas.animationFrame) {
                     oscilloscopeCanvas.stopAnimating(oscilloscopeCanvas.animationFrame);
                     oscilloscopeCanvas.clearCanvas(oscilloscopeCanvas);
+                }
+            }
+        });
+    }
+    const frequency = document.getElementById("frequency");
+    if (frequency != null) {
+        frequency.addEventListener("change", function () {
+            if (this.checked) {
+                frequencyCanvas.startAnimating(frequencyCanvas, timeSeries);
+            }
+            else {
+                if (frequencyCanvas === null || frequencyCanvas === void 0 ? void 0 : frequencyCanvas.animationFrame) {
+                    frequencyCanvas.stopAnimating(frequencyCanvas.animationFrame);
+                    frequencyCanvas.clearCanvas(frequencyCanvas);
                 }
             }
         });
