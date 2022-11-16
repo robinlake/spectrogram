@@ -52,10 +52,10 @@ function initializeControls(canvas: Canvas, spectrogram: Spectrogram, legendCanv
             if (this.checked) {
                 legendCanvas.startAnimating(legendCanvas, timeSeries);
             }
-            //  else {
-            //     spectrogram.disconnectAudioDestination(spectrogram);
+             else {
+                legendCanvas.clearCanvas(legendCanvas);
 
-            // }
+            }
         });
     }
 }

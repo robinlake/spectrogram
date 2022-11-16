@@ -12,6 +12,7 @@ interface Canvas {
     animationFrame: number | null;
     startAnimating: (canvas: Canvas, timeSeries: SpectralTimeSeries) => void;
     stopAnimating: (animationFrame: number) => void;
+    clearCanvas: (canvas: Canvas) => void;
 }
 
 function resize(canvasElement: HTMLCanvasElement, config: CanvasConfig) {
@@ -34,7 +35,10 @@ function createLegendCanvas(config: CanvasConfig, parentElement: HTMLElement): C
     return createCanvas(config, parentElement, drawLegend)
 }
 
-function createCanvas(config: CanvasConfig, parentElement: HTMLElement, startAnimating: (canvas: Canvas, timeSeries: SpectralTimeSeries) => void): Canvas | null {
+function createCanvas(config: CanvasConfig, 
+    parentElement: HTMLElement, 
+    startAnimating: (canvas: Canvas, timeSeries: SpectralTimeSeries) => void,
+    ): Canvas | null {
     setParentDimensions(config, parentElement);
     const canvasElement = document.createElement("canvas");
     canvasElement.setAttribute("id", "canvas");
@@ -51,6 +55,7 @@ function createCanvas(config: CanvasConfig, parentElement: HTMLElement, startAni
         startAnimating,
         animationFrame: null,
         stopAnimating,
+        clearCanvas,
     }
     canvas.resize();
     window.addEventListener('resize', () => canvas.resize());
@@ -105,6 +110,9 @@ function drawLegend(canvas: Canvas, timeSeries: SpectralTimeSeries) {
             currentRowHeight = 0;
         }
     })
+}
+function clearCanvas(canvas: Canvas) {
+    canvas.context.clearRect(0, 0, canvas.canvasElement.width, canvas.canvasElement.height)
 }
 
 

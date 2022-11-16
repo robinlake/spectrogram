@@ -31,6 +31,7 @@ function createCanvas(config, parentElement, startAnimating) {
         startAnimating,
         animationFrame: null,
         stopAnimating,
+        clearCanvas,
     };
     canvas.resize();
     window.addEventListener('resize', () => canvas.resize());
@@ -78,6 +79,9 @@ function drawLegend(canvas, timeSeries) {
             currentRowHeight = 0;
         }
     });
+}
+function clearCanvas(canvas) {
+    canvas.context.clearRect(0, 0, canvas.canvasElement.width, canvas.canvasElement.height);
 }
 // function drawBars(canvas: HTMLCanvasElement, frequencyBinCount: number, decibelValues: Uint8Array, frequencies: number[]) {
 //     const canvasContext = canvas.getContext('2d')
