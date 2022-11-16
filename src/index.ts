@@ -1,7 +1,7 @@
 "use strict";
 import {initializeControls} from './controls.js';
-import {createCanvas} from './canvas.js';
-import {initializeSpectrogram, createSpectralTimeSeries} from './spectrogram.js'
+import {createSpectrogramCanvas} from './canvas.js';
+import {initializeSpectrogram} from './spectrogram.js'
 
 window.onload = () => {
     const fftSize = 256;
@@ -17,15 +17,14 @@ window.onload = () => {
     const spectrogramConfig = {
         fftSize,
         sampleRate,
+        maxSampleCount,
     }
     const canvasContainer = <HTMLElement>document.getElementsByClassName('canvas')[0];
-    const canvas = createCanvas(canvasConfig, canvasContainer);
+    const canvas = createSpectrogramCanvas(canvasConfig, canvasContainer);
     const spectrogram = initializeSpectrogram(spectrogramConfig);
-    const timeSeries = createSpectralTimeSeries(spectrogramConfig.sampleRate, maxSampleCount, spectrogramConfig.fftSize / 2, spectrogram.analyserNode);
-    timeSeries.pushDecibelValues(timeSeries.decibelValues, spectrogram.analyserNode, timeSeries.maxSampleCount);
-
+    // canvas?.drawLegend(canvas, timeSeries);
     if (canvas?.canvasElement) {
-        initializeControls(canvas, timeSeries, spectrogram);
+        initializeControls(canvas, spectrogram);
     }
 }
 

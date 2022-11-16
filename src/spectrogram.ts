@@ -1,4 +1,3 @@
-import {resize} from './canvas.js';
 interface Spectrogram {
     volume: HTMLInputElement;
     analyserNode: AnalyserNode;
@@ -8,11 +7,13 @@ interface Spectrogram {
     config: SpectrogramConfig;
     connectAudioDestination: (spectrogram: Spectrogram) => void;
     disconnectAudioDestination: (spectrogram: Spectrogram) => void;
+    timeSeries: SpectralTimeSeries;
 }
 
 interface SpectrogramConfig {
     fftSize: number;
     sampleRate: number;
+    maxSampleCount: number;
 }
 
 interface SpectralTimeSeries {
@@ -100,12 +101,14 @@ function disconnectAudioDestination(spectrogram: Spectrogram) {
 }
 
 function initializeSpectrogram(config: SpectrogramConfig): Spectrogram {
-    const {sampleRate, fftSize} = config;
+    const {sampleRate, fftSize, maxSampleCount} = config;
     
     const context = new AudioContext({sampleRate});
     const analyserNode = new AnalyserNode(context, { fftSize })
     const volume = <HTMLInputElement>document.getElementById('volume')
     const gainNode = new GainNode(context, {gain: Number(volume.value)})
+    const frequencyBinCount = fftSize / 2;
+    const timeSeries = createSpectralTimeSeries(sampleRate, maxSampleCount, frequencyBinCount, analyserNode)
     const spectrogram = {
         analyserNode,
         context,
@@ -114,10 +117,11 @@ function initializeSpectrogram(config: SpectrogramConfig): Spectrogram {
         config,
         connectAudioDestination,
         disconnectAudioDestination,
+        timeSeries,
     }
     setupAudioContext(spectrogram);
     return spectrogram;
 
 }
 
-export {Spectrogram, resize, initializeSpectrogram, getFrequencies, createSpectralTimeSeries, SpectralTimeSeries, SpectrogramConfig}
+export {Spectrogram, initializeSpectrogram, SpectralTimeSeries, SpectrogramConfig}

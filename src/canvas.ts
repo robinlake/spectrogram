@@ -10,8 +10,9 @@ interface Canvas {
     context: CanvasRenderingContext2D;
     resize: () => void;
     animationFrame: number | null;
-    startAnimating: (timeSeries: SpectralTimeSeries, canvas: Canvas) => void;
+    startAnimating: (canvas: Canvas, timeSeries: SpectralTimeSeries) => void;
     stopAnimating: (animationFrame: number) => void;
+    drawLegend: (canvas: Canvas, timeSeries: SpectralTimeSeries) => void;
 }
 
 function resize(canvasElement: HTMLCanvasElement, config: CanvasConfig) {
@@ -21,7 +22,7 @@ function resize(canvasElement: HTMLCanvasElement, config: CanvasConfig) {
     canvasElement.height = height;
   }
 
-function createCanvas(config: CanvasConfig, parentElement: HTMLElement): Canvas | null {
+function createSpectrogramCanvas(config: CanvasConfig, parentElement: HTMLElement): Canvas | null {
     const canvasElement = document.createElement("canvas");
     canvasElement.setAttribute("id", "canvas");
     parentElement.appendChild(canvasElement);
@@ -37,6 +38,30 @@ function createCanvas(config: CanvasConfig, parentElement: HTMLElement): Canvas 
         startAnimating: drawCanvasFrame,
         animationFrame: null,
         stopAnimating,
+        drawLegend,
+    }
+    canvas.resize();
+    window.addEventListener('resize', () => canvas.resize());
+    return canvas;
+}
+
+function createLegendCanvas(config: CanvasConfig, parentElement: HTMLElement): Canvas | null {
+    const canvasElement = document.createElement("canvas");
+    canvasElement.setAttribute("id", "canvas");
+    parentElement.appendChild(canvasElement);
+    const context = canvasElement.getContext("2d");
+    if (context === null) {
+        return null;
+    }
+    const canvas: Canvas = {
+        config,
+        canvasElement,
+        context,
+        resize: () => resize(canvasElement, config),
+        startAnimating: drawCanvasFrame,
+        animationFrame: null,
+        stopAnimating,
+        drawLegend,
     }
     canvas.resize();
     window.addEventListener('resize', () => canvas.resize());
@@ -78,6 +103,14 @@ function drawColumn(canvas: Canvas, decibelValues: number[], binHeight: number, 
     })
 }
 
+function drawLegend(canvas: Canvas, timeSeries: SpectralTimeSeries) {
+    const frequencies = timeSeries.getFrequencies(timeSeries.frequencyBinCount, timeSeries.maxFrequency);
+    frequencies.forEach((frequency, i) => {
+        const height = (canvas.canvasElement.height / timeSeries.frequencyBinCount) * i;
+        canvas.context.strokeText(frequency.toString(), 0, height)
+    })
+}
+
 
 // function drawBars(canvas: HTMLCanvasElement, frequencyBinCount: number, decibelValues: Uint8Array, frequencies: number[]) {
 //     const canvasContext = canvas.getContext('2d')
@@ -108,11 +141,11 @@ function drawColumn(canvas: Canvas, decibelValues: number[], binHeight: number, 
 
 // }
 
-function drawCanvasFrame(timeSeries: SpectralTimeSeries, canvas: Canvas) {
-    canvas.animationFrame = requestAnimationFrame(() => drawCanvasFrame(timeSeries, canvas))
+function drawCanvasFrame(canvas: Canvas, timeSeries: SpectralTimeSeries) {
+    canvas.animationFrame = requestAnimationFrame(() => drawCanvasFrame(canvas, timeSeries))
     timeSeries.pushDecibelValues(timeSeries.decibelValues, timeSeries.analyserNode, timeSeries.maxSampleCount);
   
     drawColumns(canvas, timeSeries);
 }
 
-export {resize, drawColumn, CanvasConfig, drawCanvasFrame, createCanvas, Canvas};
+export {resize, drawColumn, CanvasConfig, drawCanvasFrame, createSpectrogramCanvas, Canvas, createLegendCanvas};

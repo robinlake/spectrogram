@@ -7,7 +7,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { resize } from './canvas.js';
 function createSpectralTimeSeries(maxFrequency, maxSampleCount, frequencyBinCount, analyserNode) {
     const decibelValues = [[]];
     const maxDecibelValue = 255;
@@ -75,11 +74,13 @@ function disconnectAudioDestination(spectrogram) {
     spectrogram.source.disconnect(spectrogram.context.destination);
 }
 function initializeSpectrogram(config) {
-    const { sampleRate, fftSize } = config;
+    const { sampleRate, fftSize, maxSampleCount } = config;
     const context = new AudioContext({ sampleRate });
     const analyserNode = new AnalyserNode(context, { fftSize });
     const volume = document.getElementById('volume');
     const gainNode = new GainNode(context, { gain: Number(volume.value) });
+    const frequencyBinCount = fftSize / 2;
+    const timeSeries = createSpectralTimeSeries(sampleRate, maxSampleCount, frequencyBinCount, analyserNode);
     const spectrogram = {
         analyserNode,
         context,
@@ -88,8 +89,9 @@ function initializeSpectrogram(config) {
         config,
         connectAudioDestination,
         disconnectAudioDestination,
+        timeSeries,
     };
     setupAudioContext(spectrogram);
     return spectrogram;
 }
-export { resize, initializeSpectrogram, getFrequencies, createSpectralTimeSeries };
+export { initializeSpectrogram };

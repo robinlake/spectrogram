@@ -4,7 +4,7 @@ function resize(canvasElement, config) {
     canvasElement.width = width;
     canvasElement.height = height;
 }
-function createCanvas(config, parentElement) {
+function createSpectrogramCanvas(config, parentElement) {
     const canvasElement = document.createElement("canvas");
     canvasElement.setAttribute("id", "canvas");
     parentElement.appendChild(canvasElement);
@@ -20,6 +20,29 @@ function createCanvas(config, parentElement) {
         startAnimating: drawCanvasFrame,
         animationFrame: null,
         stopAnimating,
+        drawLegend,
+    };
+    canvas.resize();
+    window.addEventListener('resize', () => canvas.resize());
+    return canvas;
+}
+function createLegendCanvas(config, parentElement) {
+    const canvasElement = document.createElement("canvas");
+    canvasElement.setAttribute("id", "canvas");
+    parentElement.appendChild(canvasElement);
+    const context = canvasElement.getContext("2d");
+    if (context === null) {
+        return null;
+    }
+    const canvas = {
+        config,
+        canvasElement,
+        context,
+        resize: () => resize(canvasElement, config),
+        startAnimating: drawCanvasFrame,
+        animationFrame: null,
+        stopAnimating,
+        drawLegend,
     };
     canvas.resize();
     window.addEventListener('resize', () => canvas.resize());
@@ -54,6 +77,13 @@ function drawColumn(canvas, decibelValues, binHeight, index, columnWidth) {
         canvas.context.fillRect(index * columnWidth, yStart, columnWidth, binHeight);
     });
 }
+function drawLegend(canvas, timeSeries) {
+    const frequencies = timeSeries.getFrequencies(timeSeries.frequencyBinCount, timeSeries.maxFrequency);
+    frequencies.forEach((frequency, i) => {
+        const height = (canvas.canvasElement.height / timeSeries.frequencyBinCount) * i;
+        canvas.context.strokeText(frequency.toString(), 0, height);
+    });
+}
 // function drawBars(canvas: HTMLCanvasElement, frequencyBinCount: number, decibelValues: Uint8Array, frequencies: number[]) {
 //     const canvasContext = canvas.getContext('2d')
 //     if (canvasContext === null) {
@@ -77,9 +107,9 @@ function drawColumn(canvas, decibelValues, binHeight, index, columnWidth) {
 //     canvasContext.fillStyle = `hsl(${y / height * 400}, 100%, 50%)`
 //     canvasContext.fillRect(x, height - y, barWidth, y)
 // }
-function drawCanvasFrame(timeSeries, canvas) {
-    canvas.animationFrame = requestAnimationFrame(() => drawCanvasFrame(timeSeries, canvas));
+function drawCanvasFrame(canvas, timeSeries) {
+    canvas.animationFrame = requestAnimationFrame(() => drawCanvasFrame(canvas, timeSeries));
     timeSeries.pushDecibelValues(timeSeries.decibelValues, timeSeries.analyserNode, timeSeries.maxSampleCount);
     drawColumns(canvas, timeSeries);
 }
-export { resize, drawColumn, drawCanvasFrame, createCanvas };
+export { resize, drawColumn, drawCanvasFrame, createSpectrogramCanvas, createLegendCanvas };

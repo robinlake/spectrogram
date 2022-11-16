@@ -1,5 +1,5 @@
-function initializeControls(canvas, timeSeries, spectrogram) {
-    const { volume, gainNode, context } = spectrogram;
+function initializeControls(canvas, spectrogram) {
+    const { volume, gainNode, context, timeSeries } = spectrogram;
     volume.addEventListener('input', e => {
         if (e.target != null) {
             const value = parseFloat(e.target.value);
@@ -10,7 +10,7 @@ function initializeControls(canvas, timeSeries, spectrogram) {
     if (startButton != null) {
         startButton.addEventListener("click", () => {
             if (canvas != null) {
-                canvas.startAnimating(timeSeries, canvas);
+                canvas.startAnimating(canvas, timeSeries);
             }
         });
     }
@@ -37,6 +37,17 @@ function initializeControls(canvas, timeSeries, spectrogram) {
             else {
                 spectrogram.disconnectAudioDestination(spectrogram);
             }
+        });
+    }
+    const legend = document.getElementById("legend");
+    if (legend != null) {
+        legend.addEventListener("change", function () {
+            if (this.checked) {
+                canvas.drawLegend(canvas, timeSeries);
+            }
+            //  else {
+            //     spectrogram.disconnectAudioDestination(spectrogram);
+            // }
         });
     }
 }

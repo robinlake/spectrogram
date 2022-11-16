@@ -1,9 +1,9 @@
-import {SpectralTimeSeries, Spectrogram} from './spectrogram.js'
+import {Spectrogram} from './spectrogram.js'
 import {Canvas} from './canvas.js';
 
-function initializeControls(canvas: Canvas, timeSeries: SpectralTimeSeries, spectrogram: Spectrogram) {
+function initializeControls(canvas: Canvas, spectrogram: Spectrogram) {
 
-    const {volume, gainNode, context} = spectrogram;
+    const {volume, gainNode, context, timeSeries} = spectrogram;
     volume.addEventListener('input', e => {
         if (e.target != null) {
             const value = parseFloat((e.target as HTMLInputElement).value)
@@ -15,7 +15,7 @@ function initializeControls(canvas: Canvas, timeSeries: SpectralTimeSeries, spec
     if (startButton != null) {
         startButton.addEventListener("click", () => {
             if (canvas != null) {
-                canvas.startAnimating(timeSeries, canvas);
+                canvas.startAnimating(canvas, timeSeries);
             }
         });
     }
@@ -44,6 +44,18 @@ function initializeControls(canvas: Canvas, timeSeries: SpectralTimeSeries, spec
                 spectrogram.disconnectAudioDestination(spectrogram);
 
             }
+        });
+    }
+    const legend = <HTMLInputElement>document.getElementById("legend");
+    if (legend != null) {
+        legend.addEventListener("change", function()  {
+            if (this.checked) {
+                canvas.drawLegend(canvas, timeSeries);
+            }
+            //  else {
+            //     spectrogram.disconnectAudioDestination(spectrogram);
+
+            // }
         });
     }
 }
