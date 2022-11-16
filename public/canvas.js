@@ -67,9 +67,16 @@ function drawColumn(canvas, decibelValues, binHeight, index, columnWidth) {
 }
 function drawLegend(canvas, timeSeries) {
     const frequencies = timeSeries.getFrequencies(timeSeries.frequencyBinCount, timeSeries.maxFrequency);
+    const iterationHeight = canvas.canvasElement.height / timeSeries.frequencyBinCount;
+    const minRowHeight = 30;
+    let currentRowHeight = minRowHeight;
     frequencies.forEach((frequency, i) => {
-        const height = (canvas.canvasElement.height / timeSeries.frequencyBinCount) * i;
-        canvas.context.strokeText(frequency.toString(), 0, height);
+        currentRowHeight += iterationHeight;
+        if (currentRowHeight >= minRowHeight) {
+            const height = (iterationHeight) * i;
+            canvas.context.strokeText(Math.round(frequency).toString() + " hz", 0, canvas.canvasElement.height - height);
+            currentRowHeight = 0;
+        }
     });
 }
 // function drawBars(canvas: HTMLCanvasElement, frequencyBinCount: number, decibelValues: Uint8Array, frequencies: number[]) {
