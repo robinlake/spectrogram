@@ -1,7 +1,7 @@
 import {Spectrogram} from './spectrogram.js'
 import {Canvas} from './canvas.js';
 
-function initializeControls(canvas: Canvas, spectrogram: Spectrogram) {
+function initializeControls(canvas: Canvas, spectrogram: Spectrogram, legendCanvas: Canvas) {
 
     const {volume, gainNode, context, timeSeries} = spectrogram;
     volume.addEventListener('input', e => {
@@ -50,7 +50,7 @@ function initializeControls(canvas: Canvas, spectrogram: Spectrogram) {
     if (legend != null) {
         legend.addEventListener("change", function()  {
             if (this.checked) {
-                canvas.drawLegend(canvas, timeSeries);
+                legendCanvas.startAnimating(legendCanvas, timeSeries);
             }
             //  else {
             //     spectrogram.disconnectAudioDestination(spectrogram);

@@ -1,32 +1,21 @@
 function resize(canvasElement, config) {
     const width = window.innerWidth * config.width;
-    const height = Math.min(window.innerHeight * config.height, width);
+    // const height = window.innerHeight * config.height;
+    const height = Math.min(window.innerHeight * config.height, width * 1.2);
     canvasElement.width = width;
     canvasElement.height = height;
 }
+function setParentDimensions(config, parentElement) {
+    parentElement.style.height = Math.max((window.innerHeight * config.height), parentElement.clientHeight).toString();
+}
 function createSpectrogramCanvas(config, parentElement) {
-    const canvasElement = document.createElement("canvas");
-    canvasElement.setAttribute("id", "canvas");
-    parentElement.appendChild(canvasElement);
-    const context = canvasElement.getContext("2d");
-    if (context === null) {
-        return null;
-    }
-    const canvas = {
-        config,
-        canvasElement,
-        context,
-        resize: () => resize(canvasElement, config),
-        startAnimating: drawCanvasFrame,
-        animationFrame: null,
-        stopAnimating,
-        drawLegend,
-    };
-    canvas.resize();
-    window.addEventListener('resize', () => canvas.resize());
-    return canvas;
+    return createCanvas(config, parentElement, drawCanvasFrame);
 }
 function createLegendCanvas(config, parentElement) {
+    return createCanvas(config, parentElement, drawLegend);
+}
+function createCanvas(config, parentElement, startAnimating) {
+    setParentDimensions(config, parentElement);
     const canvasElement = document.createElement("canvas");
     canvasElement.setAttribute("id", "canvas");
     parentElement.appendChild(canvasElement);
@@ -39,10 +28,9 @@ function createLegendCanvas(config, parentElement) {
         canvasElement,
         context,
         resize: () => resize(canvasElement, config),
-        startAnimating: drawCanvasFrame,
+        startAnimating,
         animationFrame: null,
         stopAnimating,
-        drawLegend,
     };
     canvas.resize();
     window.addEventListener('resize', () => canvas.resize());

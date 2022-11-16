@@ -12,40 +12,30 @@ interface Canvas {
     animationFrame: number | null;
     startAnimating: (canvas: Canvas, timeSeries: SpectralTimeSeries) => void;
     stopAnimating: (animationFrame: number) => void;
-    drawLegend: (canvas: Canvas, timeSeries: SpectralTimeSeries) => void;
 }
 
 function resize(canvasElement: HTMLCanvasElement, config: CanvasConfig) {
     const width = window.innerWidth * config.width;
-    const height = Math.min(window.innerHeight * config.height, width);
+    // const height = window.innerHeight * config.height;
+    const height = Math.min(window.innerHeight * config.height, width * 1.2);
     canvasElement.width = width;
     canvasElement.height = height;
   }
 
+function setParentDimensions(config: CanvasConfig, parentElement: HTMLElement) {
+    parentElement.style.height = Math.max((window.innerHeight * config.height), parentElement.clientHeight).toString();
+}
+
 function createSpectrogramCanvas(config: CanvasConfig, parentElement: HTMLElement): Canvas | null {
-    const canvasElement = document.createElement("canvas");
-    canvasElement.setAttribute("id", "canvas");
-    parentElement.appendChild(canvasElement);
-    const context = canvasElement.getContext("2d");
-    if (context === null) {
-        return null;
-    }
-    const canvas: Canvas = {
-        config,
-        canvasElement,
-        context,
-        resize: () => resize(canvasElement, config),
-        startAnimating: drawCanvasFrame,
-        animationFrame: null,
-        stopAnimating,
-        drawLegend,
-    }
-    canvas.resize();
-    window.addEventListener('resize', () => canvas.resize());
-    return canvas;
+    return createCanvas(config, parentElement, drawCanvasFrame)
 }
 
 function createLegendCanvas(config: CanvasConfig, parentElement: HTMLElement): Canvas | null {
+    return createCanvas(config, parentElement, drawLegend)
+}
+
+function createCanvas(config: CanvasConfig, parentElement: HTMLElement, startAnimating: (canvas: Canvas, timeSeries: SpectralTimeSeries) => void): Canvas | null {
+    setParentDimensions(config, parentElement);
     const canvasElement = document.createElement("canvas");
     canvasElement.setAttribute("id", "canvas");
     parentElement.appendChild(canvasElement);
@@ -58,10 +48,9 @@ function createLegendCanvas(config: CanvasConfig, parentElement: HTMLElement): C
         canvasElement,
         context,
         resize: () => resize(canvasElement, config),
-        startAnimating: drawCanvasFrame,
+        startAnimating,
         animationFrame: null,
         stopAnimating,
-        drawLegend,
     }
     canvas.resize();
     window.addEventListener('resize', () => canvas.resize());
