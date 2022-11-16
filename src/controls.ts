@@ -1,7 +1,7 @@
 import {Spectrogram} from './spectrogram.js'
 import {Canvas} from './canvas.js';
 
-function initializeControls(canvas: Canvas, spectrogram: Spectrogram, legendCanvas: Canvas) {
+function initializeControls(spectrogramCanvas: Canvas, spectrogram: Spectrogram, legendCanvas: Canvas, oscilloscopeCanvas: Canvas) {
 
     const {volume, gainNode, context, timeSeries} = spectrogram;
     volume.addEventListener('input', e => {
@@ -14,8 +14,8 @@ function initializeControls(canvas: Canvas, spectrogram: Spectrogram, legendCanv
     const startButton = document.getElementById("startButton");
     if (startButton != null) {
         startButton.addEventListener("click", () => {
-            if (canvas != null) {
-                canvas.startAnimating(canvas, timeSeries);
+            if (spectrogramCanvas != null) {
+                spectrogramCanvas.startAnimating(spectrogramCanvas, timeSeries);
             }
         });
     }
@@ -23,8 +23,8 @@ function initializeControls(canvas: Canvas, spectrogram: Spectrogram, legendCanv
     const stopButton = document.getElementById("stopButton");
     if (stopButton != null) {
         stopButton.addEventListener("click", () => {
-            if (canvas != null && canvas.animationFrame != null) {
-                canvas.stopAnimating(canvas.animationFrame);
+            if (spectrogramCanvas != null && spectrogramCanvas.animationFrame != null) {
+                spectrogramCanvas.stopAnimating(spectrogramCanvas.animationFrame);
             }
         });
     }
@@ -33,6 +33,7 @@ function initializeControls(canvas: Canvas, spectrogram: Spectrogram, legendCanv
     if (resetButton != null) {
         resetButton.addEventListener("click", () => {
             timeSeries.clearDecibelValues(timeSeries);
+            spectrogramCanvas.clearCanvas(spectrogramCanvas);
         });
     }
     const hearAudio = <HTMLInputElement>document.getElementById("hearAudio");
@@ -54,6 +55,22 @@ function initializeControls(canvas: Canvas, spectrogram: Spectrogram, legendCanv
             }
              else {
                 legendCanvas.clearCanvas(legendCanvas);
+
+            }
+        });
+    }
+
+    const oscilloscope = <HTMLInputElement>document.getElementById("oscilloscope");
+    if (oscilloscope != null) {
+        oscilloscope.addEventListener("change", function()  {
+            if (this.checked) {
+                oscilloscopeCanvas.startAnimating(oscilloscopeCanvas, timeSeries);
+            }
+             else {
+                 if (oscilloscopeCanvas?.animationFrame) {
+                     oscilloscopeCanvas.stopAnimating(oscilloscopeCanvas.animationFrame);
+                     oscilloscopeCanvas.clearCanvas(oscilloscopeCanvas);
+                 }
 
             }
         });

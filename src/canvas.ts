@@ -28,11 +28,15 @@ function setParentDimensions(config: CanvasConfig, parentElement: HTMLElement) {
 }
 
 function createSpectrogramCanvas(config: CanvasConfig, parentElement: HTMLElement): Canvas | null {
-    return createCanvas(config, parentElement, drawCanvasFrame)
+    return createCanvas(config, parentElement, drawSpectrogramCanvasFrame)
 }
 
 function createLegendCanvas(config: CanvasConfig, parentElement: HTMLElement): Canvas | null {
     return createCanvas(config, parentElement, drawLegend)
+}
+
+function createOscilloscopeCanvas(config: CanvasConfig, parentElement: HTMLElement): Canvas | null {
+    return createCanvas(config, parentElement, drawOscilloscopeCanvasFrame)
 }
 
 function createCanvas(config: CanvasConfig, 
@@ -79,6 +83,53 @@ function drawColumns(canvas: Canvas,  timeSeries: SpectralTimeSeries) {
         drawColumn(canvas, decibels, binHeight, index, columnWidth)
     })
 
+}
+
+// function drawOscilloscopeColumns(canvas: Canvas,  timeSeries: SpectralTimeSeries) {
+//     const {frequencyBinCount, timeDomainValues} = timeSeries;
+//     const canvasContext = canvas.context;
+//     canvasContext.clearRect(0, 0, canvas.canvasElement.width, canvas.canvasElement.height)
+//     const columnWidth = canvas.canvasElement.width / timeDomainValues.length;
+//     // const maxValue = (timeSeries.getMaxRowValues(timeDomainValues)).reduce((x, y) => y > x ? y : x)
+//     // const binHeight = canvas.canvasElement.height / maxValue;
+//     const binHeight = canvas.canvasElement.height / frequencyBinCount;
+    
+//     // const maxActualValue = getMax(timeSeries.timeDomainValues)
+//     timeDomainValues.forEach((values, index) => {
+//         // drawColumn(canvas, values, binHeight, index, columnWidth, maxActualValue)
+//         drawColumn(canvas, values, binHeight, index, columnWidth)
+//     })
+
+// }
+function drawOscilloscopeStuff(canvas: Canvas,  timeSeries: SpectralTimeSeries) {
+    const {timeDomainValues} = timeSeries;
+    const canvasContext = canvas.context;
+    canvasContext.clearRect(0, 0, canvas.canvasElement.width, canvas.canvasElement.height)
+    canvasContext.fillStyle = 'rgb(230, 20, 210)';
+    canvasContext.fillRect(0, 0, canvas.canvasElement.width, canvas.canvasElement.height);
+    canvasContext.lineWidth = 2
+    canvasContext.strokeStyle = 'rgb(0,0,0)';
+    canvasContext.beginPath();
+    const bufferLength = timeSeries.analyserNode.frequencyBinCount;
+    let sliceWidth = canvas.canvasElement.width / bufferLength;
+    const column = timeDomainValues[timeDomainValues.length - 1];
+    let x = 0;
+
+    for(var i = 0; i < bufferLength; i++) {
+    
+            var v = column[i] / 128.0;
+            var y = v * canvas.canvasElement.height/2;
+
+            if(i === 0) {
+            canvasContext.moveTo(x, y);
+            } else {
+            canvasContext.lineTo(x, y);
+            }
+
+            x += sliceWidth;
+        };
+        canvasContext.lineTo(canvas.canvasElement.width, canvas.canvasElement.height/2);
+        canvasContext.stroke();
 }
 
 // function getMax(a: number[][]): number{
@@ -145,11 +196,19 @@ function clearCanvas(canvas: Canvas) {
 
 // }
 
-function drawCanvasFrame(canvas: Canvas, timeSeries: SpectralTimeSeries) {
-    canvas.animationFrame = requestAnimationFrame(() => drawCanvasFrame(canvas, timeSeries))
+function drawSpectrogramCanvasFrame(canvas: Canvas, timeSeries: SpectralTimeSeries) {
+    canvas.animationFrame = requestAnimationFrame(() => drawSpectrogramCanvasFrame(canvas, timeSeries))
     timeSeries.pushDecibelValues(timeSeries.decibelValues, timeSeries.analyserNode, timeSeries.maxSampleCount);
   
     drawColumns(canvas, timeSeries);
 }
 
-export {resize, drawColumn, CanvasConfig, drawCanvasFrame, createSpectrogramCanvas, Canvas, createLegendCanvas};
+function drawOscilloscopeCanvasFrame(canvas: Canvas, timeSeries: SpectralTimeSeries) {
+    canvas.animationFrame = requestAnimationFrame(() => drawOscilloscopeCanvasFrame(canvas, timeSeries))
+    timeSeries.pushTimeDomainValues(timeSeries.timeDomainValues, timeSeries.analyserNode, timeSeries.maxSampleCount);
+  
+    // drawOscilloscopeColumns(canvas, timeSeries);
+    drawOscilloscopeStuff(canvas, timeSeries);
+}
+
+export {resize, drawColumn, CanvasConfig, createSpectrogramCanvas, Canvas, createLegendCanvas, createOscilloscopeCanvas};

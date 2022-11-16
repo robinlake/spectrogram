@@ -10,11 +10,15 @@ interface SpectralTimeSeries {
     pushDecibelValues: (decibelValues: number[][], analyserNode: AnalyserNode, maxSampleCount: number) => number[][];
     clearDecibelValues: (timeSeries: SpectralTimeSeries) => void;
     getMaxRowValues: (matrix2d: number[][]) => number[];
+    timeDomainValues: number[][];
+    pushTimeDomainValues: (decibelValues: number[][], analyserNode: AnalyserNode, maxSampleCount: number) => number[][];
+    clearTimeDomainValues: (timeSeries: SpectralTimeSeries) => void;
 }
 
 function createSpectralTimeSeries(maxFrequency: number, maxSampleCount: number, frequencyBinCount: number, analyserNode: AnalyserNode): SpectralTimeSeries {
     const column = new Array(frequencyBinCount).fill(0);
     const decibelValues: number[][] = [column];
+    const timeDomainValues: number[][] = [column];
     const maxDecibelValue = 255;
     const timeSeries = {
         frequencyBinCount,
@@ -27,6 +31,9 @@ function createSpectralTimeSeries(maxFrequency: number, maxSampleCount: number, 
         pushDecibelValues: (decibelValues: number[][], analyserNode: AnalyserNode, maxSampleCount: number) => pushDecibelValues(decibelValues, analyserNode, maxSampleCount),
         clearDecibelValues,
         getMaxRowValues,
+        timeDomainValues,
+        pushTimeDomainValues,
+        clearTimeDomainValues,
     }
     return timeSeries;
 }
@@ -50,7 +57,22 @@ function pushDecibelValues(decibelValues: number[][], analyserNode: AnalyserNode
 }
 
 function clearDecibelValues(timeSeries: SpectralTimeSeries) {
-    timeSeries.decibelValues = [];
+    timeSeries.decibelValues = new Array(timeSeries.frequencyBinCount).fill(0);
+}
+
+function pushTimeDomainValues(timeDomainValues: number[][], analyserNode: AnalyserNode, maxSampleCount: number): number[][] {
+    const newTimeDomainValues = new Uint8Array(analyserNode.frequencyBinCount)
+    // analyserNode.getByteFrequencyData(newTimeDomainValues)
+    analyserNode.getByteTimeDomainData(newTimeDomainValues)
+    timeDomainValues.push(new Array<number>(...newTimeDomainValues));
+    if (timeDomainValues.length > maxSampleCount) {
+        timeDomainValues.shift();
+    }
+    return timeDomainValues;
+}
+
+function clearTimeDomainValues(timeSeries: SpectralTimeSeries) {
+    timeSeries.timeDomainValues = new Array(timeSeries.frequencyBinCount).fill(0);
 }
 
 function getMaxRowValues(matrix2d: number[][]) :number[] {

@@ -1,6 +1,6 @@
 "use strict";
 import {initializeControls} from './controls.js';
-import {createSpectrogramCanvas, createLegendCanvas} from './canvas.js';
+import {createSpectrogramCanvas, createLegendCanvas, createOscilloscopeCanvas} from './canvas.js';
 import {initializeSpectrogram} from './spectrogram.js'
 
 window.onload = () => {
@@ -26,10 +26,11 @@ window.onload = () => {
     const canvasContainer = <HTMLElement>document.getElementsByClassName('canvas')[0];
     const spectrogramCanvas = createSpectrogramCanvas(spectrogramCanvasConfig, canvasContainer);
     const legendCanvas = createLegendCanvas(legendCanvasConfig, canvasContainer);
+    const oscilloscopeCanvas = createOscilloscopeCanvas(spectrogramCanvasConfig, canvasContainer);
     const spectrogram = initializeSpectrogram(spectrogramConfig);
     // canvas?.drawLegend(canvas, timeSeries);
-    if (spectrogramCanvas && legendCanvas) {
-        initializeControls(spectrogramCanvas, spectrogram, legendCanvas);
+    if (spectrogramCanvas && legendCanvas && oscilloscopeCanvas) {
+        initializeControls(spectrogramCanvas, spectrogram, legendCanvas, oscilloscopeCanvas);
     }
 }
 

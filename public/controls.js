@@ -1,4 +1,4 @@
-function initializeControls(canvas, spectrogram, legendCanvas) {
+function initializeControls(spectrogramCanvas, spectrogram, legendCanvas, oscilloscopeCanvas) {
     const { volume, gainNode, context, timeSeries } = spectrogram;
     volume.addEventListener('input', e => {
         if (e.target != null) {
@@ -9,16 +9,16 @@ function initializeControls(canvas, spectrogram, legendCanvas) {
     const startButton = document.getElementById("startButton");
     if (startButton != null) {
         startButton.addEventListener("click", () => {
-            if (canvas != null) {
-                canvas.startAnimating(canvas, timeSeries);
+            if (spectrogramCanvas != null) {
+                spectrogramCanvas.startAnimating(spectrogramCanvas, timeSeries);
             }
         });
     }
     const stopButton = document.getElementById("stopButton");
     if (stopButton != null) {
         stopButton.addEventListener("click", () => {
-            if (canvas != null && canvas.animationFrame != null) {
-                canvas.stopAnimating(canvas.animationFrame);
+            if (spectrogramCanvas != null && spectrogramCanvas.animationFrame != null) {
+                spectrogramCanvas.stopAnimating(spectrogramCanvas.animationFrame);
             }
         });
     }
@@ -26,6 +26,7 @@ function initializeControls(canvas, spectrogram, legendCanvas) {
     if (resetButton != null) {
         resetButton.addEventListener("click", () => {
             timeSeries.clearDecibelValues(timeSeries);
+            spectrogramCanvas.clearCanvas(spectrogramCanvas);
         });
     }
     const hearAudio = document.getElementById("hearAudio");
@@ -47,6 +48,20 @@ function initializeControls(canvas, spectrogram, legendCanvas) {
             }
             else {
                 legendCanvas.clearCanvas(legendCanvas);
+            }
+        });
+    }
+    const oscilloscope = document.getElementById("oscilloscope");
+    if (oscilloscope != null) {
+        oscilloscope.addEventListener("change", function () {
+            if (this.checked) {
+                oscilloscopeCanvas.startAnimating(oscilloscopeCanvas, timeSeries);
+            }
+            else {
+                if (oscilloscopeCanvas === null || oscilloscopeCanvas === void 0 ? void 0 : oscilloscopeCanvas.animationFrame) {
+                    oscilloscopeCanvas.stopAnimating(oscilloscopeCanvas.animationFrame);
+                    oscilloscopeCanvas.clearCanvas(oscilloscopeCanvas);
+                }
             }
         });
     }

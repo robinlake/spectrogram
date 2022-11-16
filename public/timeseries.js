@@ -1,6 +1,7 @@
 function createSpectralTimeSeries(maxFrequency, maxSampleCount, frequencyBinCount, analyserNode) {
     const column = new Array(frequencyBinCount).fill(0);
     const decibelValues = [column];
+    const timeDomainValues = [column];
     const maxDecibelValue = 255;
     const timeSeries = {
         frequencyBinCount,
@@ -13,6 +14,9 @@ function createSpectralTimeSeries(maxFrequency, maxSampleCount, frequencyBinCoun
         pushDecibelValues: (decibelValues, analyserNode, maxSampleCount) => pushDecibelValues(decibelValues, analyserNode, maxSampleCount),
         clearDecibelValues,
         getMaxRowValues,
+        timeDomainValues,
+        pushTimeDomainValues,
+        clearTimeDomainValues,
     };
     return timeSeries;
 }
@@ -33,7 +37,20 @@ function pushDecibelValues(decibelValues, analyserNode, maxSampleCount) {
     return decibelValues;
 }
 function clearDecibelValues(timeSeries) {
-    timeSeries.decibelValues = [];
+    timeSeries.decibelValues = new Array(timeSeries.frequencyBinCount).fill(0);
+}
+function pushTimeDomainValues(timeDomainValues, analyserNode, maxSampleCount) {
+    const newTimeDomainValues = new Uint8Array(analyserNode.frequencyBinCount);
+    // analyserNode.getByteFrequencyData(newTimeDomainValues)
+    analyserNode.getByteTimeDomainData(newTimeDomainValues);
+    timeDomainValues.push(new Array(...newTimeDomainValues));
+    if (timeDomainValues.length > maxSampleCount) {
+        timeDomainValues.shift();
+    }
+    return timeDomainValues;
+}
+function clearTimeDomainValues(timeSeries) {
+    timeSeries.timeDomainValues = new Array(timeSeries.frequencyBinCount).fill(0);
 }
 function getMaxRowValues(matrix2d) {
     const maxRowValues = new Array(matrix2d[0].length).fill(0);
