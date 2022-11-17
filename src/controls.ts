@@ -39,7 +39,6 @@ function initializeControls(spectrogramCanvas: Canvas, spectrogram: Spectrogram,
         stopButton.addEventListener("click", () => {
             if (spectrogramCanvas != null && spectrogramCanvas.animationFrame != null) {
                 spectrogramCanvas.stopAnimating(spectrogramCanvas.animationFrame);
-                console.log(spectrogram.timeSeries.getDecibelValuesForFrequencyRange(spectrogramCanvas.config.minDisplayedFrequency, spectrogramCanvas.config.maxDisplayedFrequency, timeSeries));
             }
         });
     }
@@ -112,21 +111,3 @@ function initializeControls(spectrogramCanvas: Canvas, spectrogram: Spectrogram,
 }
 
 export {initializeControls}
-
-// function loadControlsUI() {
-//     // const fragment = document.createDocumentFragment();
-//     const controls = document.createElement("div");
-//     controls.className = "controls";
-//     const controlHeader = document.createElement("h2");
-//     controlHeader.textContent = "Controls";
-//     controls.appendChild(controlHeader);
-
-//     const volumeLabel = document.createElement("label")
-//     volumeLabel.innerHTML = "Volume"
-//     volumeLabel.setAttribute("for", "volume")
-//     controls.appendChild(volumeLabel);
-
-//     document.body.insertAdjacentElement("beforeend", controls);
-// }
-
-// export {loadControlsUI};

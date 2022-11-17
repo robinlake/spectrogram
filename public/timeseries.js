@@ -37,9 +37,11 @@ function getDisplayedFrequencies(min, max, timeSeries) {
 function getDecibelValuesForFrequencyRange(minFrequency, maxFrequency, timeSeries) {
     const frequencies = getFrequencies(timeSeries.frequencyBinCount, timeSeries.maxFrequency);
     let outputValues = [];
-    // for (const [index, frequency] of frequencies.entries()) {
     for (const [_, column] of timeSeries.decibelValues.entries()) {
         let outputColumn = [];
+        if (!column.length) {
+            continue;
+        }
         for (const [innerIndex, cell] of column.entries()) {
             if (frequencies[innerIndex] >= minFrequency && frequencies[innerIndex] <= maxFrequency) {
                 outputColumn.push(cell);
@@ -47,7 +49,6 @@ function getDecibelValuesForFrequencyRange(minFrequency, maxFrequency, timeSerie
         }
         outputColumn.length > 0 && outputValues.push(outputColumn);
     }
-    // }
     return outputValues;
 }
 function pushDecibelValues(decibelValues, analyserNode, maxSampleCount) {
@@ -60,11 +61,11 @@ function pushDecibelValues(decibelValues, analyserNode, maxSampleCount) {
     return decibelValues;
 }
 function clearDecibelValues(timeSeries) {
-    timeSeries.decibelValues = new Array(timeSeries.frequencyBinCount).fill(0);
+    const emptyRow = new Array(timeSeries.frequencyBinCount).fill(0);
+    timeSeries.decibelValues = [emptyRow];
 }
 function pushTimeDomainValues(timeDomainValues, analyserNode, maxSampleCount) {
     const newTimeDomainValues = new Uint8Array(analyserNode.frequencyBinCount);
-    // analyserNode.getByteFrequencyData(newTimeDomainValues)
     analyserNode.getByteTimeDomainData(newTimeDomainValues);
     timeDomainValues.push(new Array(...newTimeDomainValues));
     if (timeDomainValues.length > maxSampleCount) {
@@ -77,7 +78,6 @@ function clearTimeDomainValues(timeSeries) {
 }
 function getMaxRowValues(matrix2d) {
     const maxRowValues = new Array(matrix2d[0].length).fill(0);
-    // const isGreater = (x: number, y: number) => x > y;
     for (const column of matrix2d) {
         for (const [index, value] of column.entries()) {
             if (value > maxRowValues[index]) {

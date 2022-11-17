@@ -29,7 +29,6 @@ window.onload = () => {
     const legendCanvasConfig = {
         height,
         width,
-        // width: width * 1.2,
         alpha: true,
         maxDisplayedFrequency,
         minDisplayedFrequency,

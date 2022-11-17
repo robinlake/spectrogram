@@ -27,8 +27,6 @@ function resize(canvas: Canvas) {
     if (window.innerWidth < 768) {
         width = window.innerWidth;
     }
-    // const height = window.innerHeight * config.height;
-    // const height = Math.min(config.height, width * 1.2);
     canvasElement.width = width;
     canvasElement.height = height;
   }
@@ -94,10 +92,6 @@ function setAnimationRate(canvas: Canvas, interval: number) {
 }
 
 function drawColumns(canvas: Canvas,  timeSeries: SpectralTimeSeries) {
-    // const {frequencyBinCount, decibelValues} = timeSeries;
-    // const canvasContext = canvas.context;
-    // const canvasContext = document.createElement('canvas')
-    // canvasContext.clearRect(0, 0, canvas.canvasElement.width, canvas.canvasElement.height)
     const decibelValuesToDisplay = timeSeries.getDecibelValuesForFrequencyRange(canvas.config.minDisplayedFrequency, canvas.config.maxDisplayedFrequency, timeSeries);
     canvas.context.fillStyle = "hsl(255, 100%, 50%)";
     const columnWidth = canvas.canvasElement.width / decibelValuesToDisplay.length;
@@ -127,8 +121,8 @@ function drawOscilloscopeVisual(canvas: Canvas,  timeSeries: SpectralTimeSeries)
     const {timeDomainValues} = timeSeries;
     const canvasContext = canvas.context;
     canvasContext.clearRect(0, 0, canvas.canvasElement.width, canvas.canvasElement.height)
-    // canvasContext.fillStyle = 'rgb(230, 20, 210)';
-    // canvasContext.fillRect(0, 0, canvas.canvasElement.width, canvas.canvasElement.height);
+    canvasContext.fillStyle = 'rgba(230, 130, 210, .3)';
+    canvasContext.fillRect(0, 0, canvas.canvasElement.width, canvas.canvasElement.height);
     canvasContext.lineWidth = 2
     canvasContext.strokeStyle = 'rgb(0,0,0)';
     canvasContext.beginPath();
