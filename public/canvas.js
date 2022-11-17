@@ -80,8 +80,8 @@ function drawOscilloscopeVisual(canvas, timeSeries) {
     const { timeDomainValues } = timeSeries;
     const canvasContext = canvas.context;
     canvasContext.clearRect(0, 0, canvas.canvasElement.width, canvas.canvasElement.height);
-    canvasContext.fillStyle = 'rgb(230, 20, 210)';
-    canvasContext.fillRect(0, 0, canvas.canvasElement.width, canvas.canvasElement.height);
+    // canvasContext.fillStyle = 'rgb(230, 20, 210)';
+    // canvasContext.fillRect(0, 0, canvas.canvasElement.width, canvas.canvasElement.height);
     canvasContext.lineWidth = 2;
     canvasContext.strokeStyle = 'rgb(0,0,0)';
     canvasContext.beginPath();
