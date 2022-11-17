@@ -6,8 +6,8 @@ window.onload = () => {
     const fftSize = 512;
     const sampleRate = 4000;
     const maxSampleCount = 200;
-    const width = .5;
-    const height = .5;
+    const width = .8;
+    const height = width;
     const spectrogramCanvasConfig = {
         height: height,
         width: width,
@@ -20,7 +20,8 @@ window.onload = () => {
     };
     const legendCanvasConfig = {
         height: height,
-        width: width * 1.2,
+        width: width,
+        // width: width * 1.2,
         alpha: true,
     };
     const spectrogramConfig = {

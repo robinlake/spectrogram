@@ -47,7 +47,10 @@ function initializeControls(spectrogramCanvas, spectrogram, legendCanvas, oscill
                 legendCanvas.startAnimating(legendCanvas, timeSeries);
             }
             else {
-                legendCanvas.clearCanvas(legendCanvas);
+                if (legendCanvas.animationFrame) {
+                    legendCanvas.stopAnimating(legendCanvas.animationFrame);
+                    legendCanvas.clearCanvas(legendCanvas);
+                }
             }
         });
     }

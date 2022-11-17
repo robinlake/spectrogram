@@ -1,8 +1,12 @@
 function resize(canvas) {
     const { canvasElement, config } = canvas;
-    const width = window.innerWidth * config.width;
+    let width = config.width * window.innerWidth;
+    let height = config.height * window.innerHeight;
+    if (window.innerWidth < 768) {
+        width = window.innerWidth;
+    }
     // const height = window.innerHeight * config.height;
-    const height = Math.min(window.innerHeight * config.height, width * 1.2);
+    // const height = Math.min(config.height, width * 1.2);
     canvasElement.width = width;
     canvasElement.height = height;
 }
@@ -14,7 +18,7 @@ function createSpectrogramCanvas(config, parentElement) {
     return createCanvas(config, parentElement, drawSpectrogramCanvasFrame);
 }
 function createLegendCanvas(config, parentElement) {
-    return createCanvas(config, parentElement, drawLegend);
+    return createCanvas(config, parentElement, drawLegendCanvasFrame);
 }
 function createOscilloscopeCanvas(config, parentElement) {
     return createCanvas(config, parentElement, drawOscilloscopeCanvasFrame);
@@ -71,15 +75,6 @@ function drawColumn(canvas, decibelValues, binHeight, index, columnWidth) {
         const yStart = canvas.canvasElement.height - (binHeight * (i + 1)); // canvas.height corresponds to bottom of the canvas
         canvas.context.fillRect(index * columnWidth, yStart, columnWidth, binHeight);
     }
-    // decibelValues.forEach((decibelValue, i) => {
-    //     if (decibelValue === 0) {
-    //         continue;
-    //     }
-    //     const h = 255 - decibelValue;
-    //     canvas.context.fillStyle = `hsl(${h}, 100%, 50%)`
-    //     const yStart = canvas.canvasElement.height - (binHeight * (i + 1)) // canvas.height corresponds to bottom of the canvas
-    //     canvas.context.fillRect(index * columnWidth, yStart, columnWidth, binHeight)
-    // })
 }
 function drawOscilloscopeVisual(canvas, timeSeries) {
     const { timeDomainValues } = timeSeries;
@@ -108,20 +103,6 @@ function drawOscilloscopeVisual(canvas, timeSeries) {
     ;
     canvasContext.lineTo(canvas.canvasElement.width, canvas.canvasElement.height / 2);
     canvasContext.stroke();
-}
-function drawLegend(canvas, timeSeries) {
-    const frequencies = timeSeries.getFrequencies(timeSeries.frequencyBinCount, timeSeries.maxFrequency);
-    const iterationHeight = canvas.canvasElement.height / timeSeries.frequencyBinCount;
-    const minRowHeight = 30;
-    let currentRowHeight = minRowHeight;
-    frequencies.forEach((frequency, i) => {
-        currentRowHeight += iterationHeight;
-        if (currentRowHeight >= minRowHeight) {
-            const height = (iterationHeight) * i;
-            canvas.context.strokeText(Math.round(frequency).toString() + " hz", 0, canvas.canvasElement.height - height);
-            currentRowHeight = 0;
-        }
-    });
 }
 function clearCanvas(canvas) {
     canvas.context.clearRect(0, 0, canvas.canvasElement.width, canvas.canvasElement.height);
@@ -171,6 +152,28 @@ const throttled = (callback, interval) => {
     };
 };
 const throttledDrawColumns = throttled(drawColumns, 50);
+const throttledDrawLegend = throttled(drawLegend, 1000);
+function drawLegend(canvas, timeSeries) {
+    const frequencies = timeSeries.getFrequencies(timeSeries.frequencyBinCount, timeSeries.maxFrequency);
+    const iterationHeight = canvas.canvasElement.height / timeSeries.frequencyBinCount;
+    const minRowHeight = 30;
+    let currentRowHeight = 10;
+    canvas.context.fillStyle = "rgb(255, 255, 255)";
+    canvas.context.fillRect(0, 0, 60, canvas.canvasElement.height);
+    canvas.context.font = "16px bold";
+    frequencies.forEach((frequency, i) => {
+        currentRowHeight += iterationHeight;
+        if (currentRowHeight >= minRowHeight) {
+            const height = (iterationHeight) * i;
+            canvas.context.strokeText(Math.round(frequency).toString() + " hz", 0, canvas.canvasElement.height - height);
+            currentRowHeight = 0;
+        }
+    });
+}
+function drawLegendCanvasFrame(canvas, timeSeries) {
+    canvas.animationFrame = requestAnimationFrame(() => drawLegendCanvasFrame(canvas, timeSeries));
+    throttledDrawLegend(canvas, timeSeries);
+}
 function drawSpectrogramCanvasFrame(canvas, timeSeries) {
     canvas.animationFrame = requestAnimationFrame(() => drawSpectrogramCanvasFrame(canvas, timeSeries));
     timeSeries.pushDecibelValues(timeSeries.decibelValues, timeSeries.analyserNode, timeSeries.maxSampleCount);
