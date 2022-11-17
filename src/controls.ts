@@ -39,6 +39,7 @@ function initializeControls(spectrogramCanvas: Canvas, spectrogram: Spectrogram,
         stopButton.addEventListener("click", () => {
             if (spectrogramCanvas != null && spectrogramCanvas.animationFrame != null) {
                 spectrogramCanvas.stopAnimating(spectrogramCanvas.animationFrame);
+                console.log(spectrogram.timeSeries.getDecibelValuesForFrequencyRange(spectrogramCanvas.config.minDisplayedFrequency, spectrogramCanvas.config.maxDisplayedFrequency, timeSeries));
             }
         });
     }

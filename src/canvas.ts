@@ -160,22 +160,25 @@ function clearCanvas(canvas: Canvas) {
 
 
 function drawBars(canvas: Canvas, timeSeries: SpectralTimeSeries) {
-    const {frequencyBinCount, decibelValues} = timeSeries;
+    // const {frequencyBinCount} = timeSeries;
     const canvasContext = canvas.context
-    const frequencies = timeSeries.getFrequencies(frequencyBinCount, timeSeries.maxFrequency);
-    const newFrequencies = timeSeries.getDecibelValuesForFrequencyRange(canvas.config.minDisplayedFrequency, canvas.config.maxDisplayedFrequency, timeSeries);
-    console.log("newFrequencies: ", newFrequencies);
-
-    const width = canvas.canvasElement.width
-    const height = canvas.canvasElement.height
-    const barWidth = width / frequencyBinCount
+    // const frequencies = timeSeries.getFrequencies(frequencyBinCount, timeSeries.maxFrequency);
+    const frequencies = timeSeries.getDisplayedFrequencies(canvas.config.minDisplayedFrequency, canvas.config.maxDisplayedFrequency, timeSeries);
+    const decibelValuesToDisplay = timeSeries.getDecibelValuesForFrequencyRange(canvas.config.minDisplayedFrequency, canvas.config.maxDisplayedFrequency, timeSeries);
+    // console.log("newFrequencies: ", newFrequencies);
   
-    canvasContext.clearRect(0, 0, width, height)
-  
-    const mostRecentDecibelValues = decibelValues[decibelValues.length - 1];
+    const mostRecentDecibelValues = decibelValuesToDisplay[decibelValuesToDisplay.length - 1];
+    // const mostRecentDecibelValues = decibelValues[decibelValues.length - 1];
     const copy = mostRecentDecibelValues.slice();
     const sorted = copy.sort((a, b) => a < b ? 1 : -1)
     const labelCutoffValue = sorted[20]
+
+    const width = canvas.canvasElement.width
+    const height = canvas.canvasElement.height
+    // const barWidth = width / frequencyBinCount
+    const barWidth = width / mostRecentDecibelValues.length
+  
+    canvasContext.clearRect(0, 0, width, height)
 
     mostRecentDecibelValues.forEach((item, index) => {
         const y = item / 255 * height / 2
