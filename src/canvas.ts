@@ -13,6 +13,8 @@ interface Canvas {
     animationFrame: number | null;
     startAnimating: (canvas: Canvas, timeSeries: SpectralTimeSeries) => void;
     stopAnimating: (animationFrame: number) => void;
+    animationFunction: (canvas: Canvas, timeSeries: SpectralTimeSeries) => void;
+    setAnimationRate: (canvas: Canvas, interval: number) => void;
     clearCanvas: (canvas: Canvas) => void;
 }
 
@@ -34,26 +36,26 @@ function setParentDimensions(config: CanvasConfig, parentElement: HTMLElement) {
 }
 
 function createSpectrogramCanvas(config: CanvasConfig, parentElement: HTMLElement): Canvas | null {
-    // return createCanvas(config, parentElement, throttled(drawSpectrogramCanvasFrame, 100))
-    return createCanvas(config, parentElement, drawSpectrogramCanvasFrame)
+    return createCanvas(config, parentElement, drawSpectrogramCanvasFrame, throttled(drawColumns, 250))
 }
 
 function createLegendCanvas(config: CanvasConfig, parentElement: HTMLElement): Canvas | null {
-    return createCanvas(config, parentElement, drawLegendCanvasFrame)
+    return createCanvas(config, parentElement, drawLegendCanvasFrame, throttled(drawLegend, 1000))
 }
 
 function createOscilloscopeCanvas(config: CanvasConfig, parentElement: HTMLElement): Canvas | null {
-    return createCanvas(config, parentElement, drawOscilloscopeCanvasFrame)
+    return createCanvas(config, parentElement, drawOscilloscopeCanvasFrame, drawOscilloscopeVisual)
 }
 
 function createFrequencyCanvas(config: CanvasConfig, parentElement: HTMLElement): Canvas | null {
-    return createCanvas(config, parentElement, drawFrequencyCanvasFrame)
+    return createCanvas(config, parentElement, drawFrequencyCanvasFrame, drawBars)
 }
 
 function createCanvas(
     config: CanvasConfig, 
     parentElement: HTMLElement, 
     startAnimating: (canvas: Canvas, timeSeries: SpectralTimeSeries) => void,
+    animationFunction: (canvas: Canvas, timeSeries: SpectralTimeSeries) => void,
     ): Canvas | null {
     setParentDimensions(config, parentElement);
     const canvasElement = document.createElement("canvas");
@@ -71,7 +73,9 @@ function createCanvas(
         startAnimating,
         animationFrame: null,
         stopAnimating,
+        animationFunction,
         clearCanvas,
+        setAnimationRate,
     }
     canvas.resize();
     window.addEventListener('resize', () => canvas.resize());
@@ -80,6 +84,11 @@ function createCanvas(
 
 function stopAnimating(animationFrame: number) {
     window.cancelAnimationFrame(animationFrame);
+}
+
+function setAnimationRate(canvas: Canvas, interval: number) {
+    const anim = <any>canvas.animationFunction;
+        anim.changeInterval?.(interval);
 }
 
 function drawColumns(canvas: Canvas,  timeSeries: SpectralTimeSeries) {
@@ -173,7 +182,6 @@ function drawBars(canvas: Canvas, timeSeries: SpectralTimeSeries) {
         drawBar(x, y, height, barWidth, canvasContext)
         if (item > labelCutoffValue && localMax ) {
             canvasContext.strokeText(frequencies[index].toString(), x, height - y)
-            // canvasContext.strokeText(decibelValues[index].toString(), x, height - (y + 30))
         }
     })
 }
@@ -190,19 +198,17 @@ function drawBar(x: number, y: number, height: number, barWidth: number, canvasC
 
 const throttled = (callback: Function, interval: number) => {
     let allowed = true;
-    return (...params: any[]) => {
+    let currentInterval = interval;
+    const throttledFunc = (...params: any[]) => {
         if (allowed) {
             callback(...params);
             allowed = false
-            setTimeout(() => allowed = true, interval)
-        } else {
-            console.log("not enough time has passed")
+            setTimeout(() => allowed = true, currentInterval)
+        } 
         }
-        }     
+    throttledFunc.changeInterval = (newInterval: number) => currentInterval = newInterval;
+    return throttledFunc;
 } 
-
-const throttledDrawColumns = throttled(drawColumns, 50)
-const throttledDrawLegend = throttled(drawLegend,1000)
 
 function drawLegend(canvas: Canvas, timeSeries: SpectralTimeSeries) {
     const frequencies = timeSeries.getFrequencies(timeSeries.frequencyBinCount, timeSeries.maxFrequency);
@@ -225,14 +231,13 @@ function drawLegend(canvas: Canvas, timeSeries: SpectralTimeSeries) {
 
 function drawLegendCanvasFrame(canvas: Canvas, timeSeries: SpectralTimeSeries) {
     canvas.animationFrame = requestAnimationFrame(() => drawLegendCanvasFrame(canvas, timeSeries))
-    throttledDrawLegend(canvas, timeSeries);
+    canvas.animationFunction(canvas, timeSeries);
 
 }
 function drawSpectrogramCanvasFrame(canvas: Canvas, timeSeries: SpectralTimeSeries) {
     canvas.animationFrame = requestAnimationFrame(() => drawSpectrogramCanvasFrame(canvas, timeSeries))
     timeSeries.pushDecibelValues(timeSeries.decibelValues, timeSeries.analyserNode, timeSeries.maxSampleCount);
-    // drawColumns(canvas, timeSeries);
-    throttledDrawColumns(canvas, timeSeries);
+    canvas.animationFunction(canvas, timeSeries);
 
 }
 
@@ -240,14 +245,13 @@ function drawOscilloscopeCanvasFrame(canvas: Canvas, timeSeries: SpectralTimeSer
     canvas.animationFrame = requestAnimationFrame(() => drawOscilloscopeCanvasFrame(canvas, timeSeries))
     timeSeries.pushTimeDomainValues(timeSeries.timeDomainValues, timeSeries.analyserNode, timeSeries.maxSampleCount);
   
-    drawOscilloscopeVisual(canvas, timeSeries);
+    canvas.animationFunction(canvas, timeSeries);
 }
 
 function drawFrequencyCanvasFrame(canvas: Canvas, timeSeries: SpectralTimeSeries) {
     canvas.animationFrame = requestAnimationFrame(() => drawFrequencyCanvasFrame(canvas, timeSeries))
     timeSeries.pushDecibelValues(timeSeries.decibelValues, timeSeries.analyserNode, timeSeries.maxSampleCount);
-  
-    drawBars(canvas, timeSeries);
+    canvas.animationFunction(canvas, timeSeries);
 }
 
 export {resize, drawColumn, CanvasConfig, createSpectrogramCanvas, Canvas, createLegendCanvas, createOscilloscopeCanvas, createFrequencyCanvas};

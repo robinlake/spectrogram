@@ -14,19 +14,18 @@ function setParentDimensions(config, parentElement) {
     parentElement.style.height = Math.max((window.innerHeight * config.height), parentElement.clientHeight).toString();
 }
 function createSpectrogramCanvas(config, parentElement) {
-    // return createCanvas(config, parentElement, throttled(drawSpectrogramCanvasFrame, 100))
-    return createCanvas(config, parentElement, drawSpectrogramCanvasFrame);
+    return createCanvas(config, parentElement, drawSpectrogramCanvasFrame, throttled(drawColumns, 250));
 }
 function createLegendCanvas(config, parentElement) {
-    return createCanvas(config, parentElement, drawLegendCanvasFrame);
+    return createCanvas(config, parentElement, drawLegendCanvasFrame, throttled(drawLegend, 1000));
 }
 function createOscilloscopeCanvas(config, parentElement) {
-    return createCanvas(config, parentElement, drawOscilloscopeCanvasFrame);
+    return createCanvas(config, parentElement, drawOscilloscopeCanvasFrame, drawOscilloscopeVisual);
 }
 function createFrequencyCanvas(config, parentElement) {
-    return createCanvas(config, parentElement, drawFrequencyCanvasFrame);
+    return createCanvas(config, parentElement, drawFrequencyCanvasFrame, drawBars);
 }
-function createCanvas(config, parentElement, startAnimating) {
+function createCanvas(config, parentElement, startAnimating, animationFunction) {
     setParentDimensions(config, parentElement);
     const canvasElement = document.createElement("canvas");
     canvasElement.setAttribute("id", "canvas");
@@ -43,7 +42,9 @@ function createCanvas(config, parentElement, startAnimating) {
         startAnimating,
         animationFrame: null,
         stopAnimating,
+        animationFunction,
         clearCanvas,
+        setAnimationRate,
     };
     canvas.resize();
     window.addEventListener('resize', () => canvas.resize());
@@ -51,6 +52,11 @@ function createCanvas(config, parentElement, startAnimating) {
 }
 function stopAnimating(animationFrame) {
     window.cancelAnimationFrame(animationFrame);
+}
+function setAnimationRate(canvas, interval) {
+    var _a;
+    const anim = canvas.animationFunction;
+    (_a = anim.changeInterval) === null || _a === void 0 ? void 0 : _a.call(anim, interval);
 }
 function drawColumns(canvas, timeSeries) {
     const { frequencyBinCount, decibelValues } = timeSeries;
@@ -127,7 +133,6 @@ function drawBars(canvas, timeSeries) {
         drawBar(x, y, height, barWidth, canvasContext);
         if (item > labelCutoffValue && localMax) {
             canvasContext.strokeText(frequencies[index].toString(), x, height - y);
-            // canvasContext.strokeText(decibelValues[index].toString(), x, height - (y + 30))
         }
     });
 }
@@ -140,19 +145,17 @@ function drawBar(x, y, height, barWidth, canvasContext) {
 }
 const throttled = (callback, interval) => {
     let allowed = true;
-    return (...params) => {
+    let currentInterval = interval;
+    const throttledFunc = (...params) => {
         if (allowed) {
             callback(...params);
             allowed = false;
-            setTimeout(() => allowed = true, interval);
-        }
-        else {
-            console.log("not enough time has passed");
+            setTimeout(() => allowed = true, currentInterval);
         }
     };
+    throttledFunc.changeInterval = (newInterval) => currentInterval = newInterval;
+    return throttledFunc;
 };
-const throttledDrawColumns = throttled(drawColumns, 50);
-const throttledDrawLegend = throttled(drawLegend, 1000);
 function drawLegend(canvas, timeSeries) {
     const frequencies = timeSeries.getFrequencies(timeSeries.frequencyBinCount, timeSeries.maxFrequency);
     const iterationHeight = canvas.canvasElement.height / timeSeries.frequencyBinCount;
@@ -172,22 +175,21 @@ function drawLegend(canvas, timeSeries) {
 }
 function drawLegendCanvasFrame(canvas, timeSeries) {
     canvas.animationFrame = requestAnimationFrame(() => drawLegendCanvasFrame(canvas, timeSeries));
-    throttledDrawLegend(canvas, timeSeries);
+    canvas.animationFunction(canvas, timeSeries);
 }
 function drawSpectrogramCanvasFrame(canvas, timeSeries) {
     canvas.animationFrame = requestAnimationFrame(() => drawSpectrogramCanvasFrame(canvas, timeSeries));
     timeSeries.pushDecibelValues(timeSeries.decibelValues, timeSeries.analyserNode, timeSeries.maxSampleCount);
-    // drawColumns(canvas, timeSeries);
-    throttledDrawColumns(canvas, timeSeries);
+    canvas.animationFunction(canvas, timeSeries);
 }
 function drawOscilloscopeCanvasFrame(canvas, timeSeries) {
     canvas.animationFrame = requestAnimationFrame(() => drawOscilloscopeCanvasFrame(canvas, timeSeries));
     timeSeries.pushTimeDomainValues(timeSeries.timeDomainValues, timeSeries.analyserNode, timeSeries.maxSampleCount);
-    drawOscilloscopeVisual(canvas, timeSeries);
+    canvas.animationFunction(canvas, timeSeries);
 }
 function drawFrequencyCanvasFrame(canvas, timeSeries) {
     canvas.animationFrame = requestAnimationFrame(() => drawFrequencyCanvasFrame(canvas, timeSeries));
     timeSeries.pushDecibelValues(timeSeries.decibelValues, timeSeries.analyserNode, timeSeries.maxSampleCount);
-    drawBars(canvas, timeSeries);
+    canvas.animationFunction(canvas, timeSeries);
 }
 export { resize, drawColumn, createSpectrogramCanvas, createLegendCanvas, createOscilloscopeCanvas, createFrequencyCanvas };

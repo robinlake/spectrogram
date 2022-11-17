@@ -22,8 +22,20 @@
             </div>
             <div class="options">
                 <h2>Options</h2>
-                <label for="volume">Volume</label>
-                <input type="range" min="0" max="1" value=".5" step=".01" id="volume">
+                <div class="group">
+                    <label for="volume">Volume</label>
+                    <div class="row-slider">
+                        <input type="range" min="0" max="1" value=".5" step=".01" id="volume">
+                        <output>50 %</output>
+                    </div>
+                </div>
+                <div class="group">
+                    <label for="spectrogramRefresh">Spectrogram Refresh Rate</label>
+                    <div class="row-slider">
+                        <input type="range" min="20" max="1000" value="50" step="10" id="spectrogramRefresh">
+                        <output>50 ms</output>
+                    </div>
+                </div>
                 <div>
                     <label for="hearAudio">Hear My Audio</label>
                     <input type="checkbox" role="switch" id="hearAudio">

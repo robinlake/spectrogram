@@ -34,4 +34,16 @@ body {
         grid-column-gap: 5px;
         justify-content: space-around;
     }
+    .row-slider {
+        display: grid;
+        grid-template-columns: 80% 15%;
+        grid-column-gap: 5%;
+        justify-content: space-around;   
+    }
+    #spectrogramRefresh {
+        direction: rtl;
+    }
+    .group {
+        padding: 1rem 0 1rem 0;
+    }
 }

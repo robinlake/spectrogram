@@ -4,8 +4,21 @@ function initializeControls(spectrogramCanvas, spectrogram, legendCanvas, oscill
         if (e.target != null) {
             const value = parseFloat(e.target.value);
             gainNode.gain.setTargetAtTime(value, context.currentTime, .01);
+            const label = volume.nextElementSibling;
+            label && (label.innerHTML = Math.round(value * 100).toString() + " %");
         }
     });
+    const spectrogramRefresh = document.getElementById("spectrogramRefresh");
+    if (spectrogramRefresh != null) {
+        spectrogramRefresh.addEventListener('input', e => {
+            if (e.target != null) {
+                const value = parseFloat(e.target.value);
+                spectrogramCanvas.setAnimationRate(spectrogramCanvas, value);
+                const label = spectrogramRefresh.nextElementSibling;
+                label && (label.innerHTML = value.toString() + " ms");
+            }
+        });
+    }
     const startButton = document.getElementById("startButton");
     if (startButton != null) {
         startButton.addEventListener("click", () => {
