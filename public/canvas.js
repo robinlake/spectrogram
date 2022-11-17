@@ -157,21 +157,25 @@ const throttled = (callback, interval) => {
     return throttledFunc;
 };
 function drawLegend(canvas, timeSeries) {
-    const frequencies = timeSeries.getFrequencies(timeSeries.frequencyBinCount, timeSeries.maxFrequency);
-    const iterationHeight = canvas.canvasElement.height / timeSeries.frequencyBinCount;
+    const { minDisplayedFrequency, maxDisplayedFrequency } = canvas.config;
+    const displayedFrequencies = timeSeries.getDisplayedFrequencies(minDisplayedFrequency, maxDisplayedFrequency, timeSeries);
+    // const frequencies = timeSeries.getFrequencies(timeSeries.frequencyBinCount, timeSeries.maxFrequency);
+    // const iterationHeight = canvas.canvasElement.height / timeSeries.frequencyBinCount
+    const iterationHeight = canvas.canvasElement.height / displayedFrequencies.length;
     const minRowHeight = 30;
     let currentRowHeight = 10;
     canvas.context.fillStyle = "rgb(255, 255, 255)";
     canvas.context.fillRect(0, 0, 60, canvas.canvasElement.height);
     canvas.context.font = "16px bold";
-    frequencies.forEach((frequency, i) => {
+    for (const [index, frequency] of displayedFrequencies.entries()) {
+        // for (const [index, frequency] of frequencies.entries()) {
         currentRowHeight += iterationHeight;
         if (currentRowHeight >= minRowHeight) {
-            const height = (iterationHeight) * i;
+            const height = (iterationHeight) * index;
             canvas.context.strokeText(Math.round(frequency).toString() + " hz", 0, canvas.canvasElement.height - height);
             currentRowHeight = 0;
         }
-    });
+    }
 }
 function drawLegendCanvasFrame(canvas, timeSeries) {
     canvas.animationFrame = requestAnimationFrame(() => drawLegendCanvasFrame(canvas, timeSeries));

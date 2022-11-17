@@ -4,26 +4,34 @@ import {createSpectrogramCanvas, createLegendCanvas, createOscilloscopeCanvas, c
 import {initializeSpectrogram} from './spectrogram.js'
 
 window.onload = () => {
-    const fftSize = 512;
-    const sampleRate = 4000;
+    const fftSize = 2048;
+    const sampleRate = 44100;
+    const minDisplayedFrequency = 32;
+    const maxDisplayedFrequency = 8096;
     const maxSampleCount = 200;
     const width = .8;
     const height = width;
     const spectrogramCanvasConfig = {
-        height: height,
-        width: width,
+        height,
+        width,
         alpha: true,
+        maxDisplayedFrequency,
+        minDisplayedFrequency,
     }
     const oscilloscopeCanvasConfig = {
-        height: height,
-        width: width,
+        height,
+        width,
         alpha: true,
+        maxDisplayedFrequency,
+        minDisplayedFrequency,
     }
     const legendCanvasConfig = {
-        height: height,
-        width: width,
+        height,
+        width,
         // width: width * 1.2,
         alpha: true,
+        maxDisplayedFrequency,
+        minDisplayedFrequency,
     }
 
     const spectrogramConfig = {

@@ -5,6 +5,7 @@ interface SpectralTimeSeries {
     maxSampleCount: number;
     analyserNode: AnalyserNode;
     getFrequencies: (frequencyBinCount: number, maxFrequency: number) => number[];
+    getDisplayedFrequencies: (min: number, max: number, timeSeries: SpectralTimeSeries) => number[];
     decibelValues: number[][];
     maxDecibelValue: number;
     pushDecibelValues: (decibelValues: number[][], analyserNode: AnalyserNode, maxSampleCount: number) => number[][];
@@ -34,6 +35,7 @@ function createSpectralTimeSeries(maxFrequency: number, maxSampleCount: number, 
         timeDomainValues,
         pushTimeDomainValues,
         clearTimeDomainValues,
+        getDisplayedFrequencies,
     }
     return timeSeries;
 }
@@ -45,6 +47,16 @@ function getFrequencies(frequencyBinCount: number, maxFrequency: number): number
     }
     return frequencies;
   }
+
+function getDisplayedFrequencies(min: number, max: number, timeSeries: SpectralTimeSeries): number[] {
+    const frequencies = timeSeries.getFrequencies(timeSeries.frequencyBinCount, timeSeries.maxFrequency);
+    const displayedFrequencies = frequencies.filter(x => x >= min && x <= max);
+    return displayedFrequencies;
+}
+
+// function getDecibelValuesForFrequencyRange(minFrequency: number, maxFrequency: number, timeSeries: SpectralTimeSeries) {
+//     const frequencies = getf
+// }
 
 function pushDecibelValues(decibelValues: number[][], analyserNode: AnalyserNode, maxSampleCount: number): number[][] {
     const newDecibalValues = new Uint8Array(analyserNode.frequencyBinCount)

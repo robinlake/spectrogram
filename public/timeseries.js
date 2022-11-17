@@ -17,6 +17,7 @@ function createSpectralTimeSeries(maxFrequency, maxSampleCount, frequencyBinCoun
         timeDomainValues,
         pushTimeDomainValues,
         clearTimeDomainValues,
+        getDisplayedFrequencies,
     };
     return timeSeries;
 }
@@ -27,6 +28,14 @@ function getFrequencies(frequencyBinCount, maxFrequency) {
     }
     return frequencies;
 }
+function getDisplayedFrequencies(min, max, timeSeries) {
+    const frequencies = timeSeries.getFrequencies(timeSeries.frequencyBinCount, timeSeries.maxFrequency);
+    const displayedFrequencies = frequencies.filter(x => x >= min && x <= max);
+    return displayedFrequencies;
+}
+// function getDecibelValuesForFrequencyRange(minFrequency: number, maxFrequency: number, timeSeries: SpectralTimeSeries) {
+//     const frequencies = getf
+// }
 function pushDecibelValues(decibelValues, analyserNode, maxSampleCount) {
     const newDecibalValues = new Uint8Array(analyserNode.frequencyBinCount);
     analyserNode.getByteFrequencyData(newDecibalValues);
