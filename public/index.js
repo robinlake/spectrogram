@@ -7,7 +7,7 @@ window.onload = () => {
     const sampleRate = 44100;
     // const sampleRate = 4000;
     const minDisplayedFrequency = 32;
-    const maxDisplayedFrequency = 2048;
+    const maxDisplayedFrequency = 4096;
     const maxSampleCount = 200;
     const width = .8;
     const height = width;

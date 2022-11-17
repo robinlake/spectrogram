@@ -59,15 +59,16 @@ function setAnimationRate(canvas, interval) {
     (_a = anim.changeInterval) === null || _a === void 0 ? void 0 : _a.call(anim, interval);
 }
 function drawColumns(canvas, timeSeries) {
-    const { frequencyBinCount, decibelValues } = timeSeries;
+    // const {frequencyBinCount, decibelValues} = timeSeries;
     // const canvasContext = canvas.context;
     // const canvasContext = document.createElement('canvas')
     // canvasContext.clearRect(0, 0, canvas.canvasElement.width, canvas.canvasElement.height)
+    const decibelValuesToDisplay = timeSeries.getDecibelValuesForFrequencyRange(canvas.config.minDisplayedFrequency, canvas.config.maxDisplayedFrequency, timeSeries);
     canvas.context.fillStyle = "hsl(255, 100%, 50%)";
-    const columnWidth = canvas.canvasElement.width / decibelValues.length;
-    const binHeight = canvas.canvasElement.height / frequencyBinCount;
+    const columnWidth = canvas.canvasElement.width / decibelValuesToDisplay.length;
+    const binHeight = canvas.canvasElement.height / decibelValuesToDisplay[decibelValuesToDisplay.length - 1].length;
     canvas.context.fillRect(0, 0, canvas.canvasElement.width, canvas.canvasElement.height);
-    decibelValues.forEach((decibels, index) => {
+    decibelValuesToDisplay.forEach((decibels, index) => {
         drawColumn(canvas, decibels, binHeight, index, columnWidth);
     });
 }
