@@ -3,7 +3,7 @@ import { initializeControls } from './controls.js';
 import { createSpectrogramCanvas, createLegendCanvas, createOscilloscopeCanvas, createFrequencyCanvas } from './canvas.js';
 import { initializeSpectrogram } from './spectrogram.js';
 window.onload = () => {
-    const fftSize = 256;
+    const fftSize = 512;
     const sampleRate = 4000;
     const maxSampleCount = 200;
     const width = .5;
@@ -11,10 +11,17 @@ window.onload = () => {
     const spectrogramCanvasConfig = {
         height: height,
         width: width,
+        alpha: true,
+    };
+    const oscilloscopeCanvasConfig = {
+        height: height,
+        width: width,
+        alpha: true,
     };
     const legendCanvasConfig = {
         height: height,
         width: width * 1.2,
+        alpha: true,
     };
     const spectrogramConfig = {
         fftSize,
@@ -24,10 +31,9 @@ window.onload = () => {
     const canvasContainer = document.getElementsByClassName('canvas')[0];
     const spectrogramCanvas = createSpectrogramCanvas(spectrogramCanvasConfig, canvasContainer);
     const legendCanvas = createLegendCanvas(legendCanvasConfig, canvasContainer);
-    const oscilloscopeCanvas = createOscilloscopeCanvas(spectrogramCanvasConfig, canvasContainer);
+    const oscilloscopeCanvas = createOscilloscopeCanvas(oscilloscopeCanvasConfig, canvasContainer);
     const frequencyCanvas = createFrequencyCanvas(spectrogramCanvasConfig, canvasContainer);
     const spectrogram = initializeSpectrogram(spectrogramConfig);
-    // canvas?.drawLegend(canvas, timeSeries);
     if (spectrogramCanvas && legendCanvas && oscilloscopeCanvas && frequencyCanvas) {
         initializeControls(spectrogramCanvas, spectrogram, legendCanvas, oscilloscopeCanvas, frequencyCanvas);
     }

@@ -2,6 +2,7 @@ import {SpectralTimeSeries} from './timeseries.js';
 interface CanvasConfig {
     height: number;
     width: number;
+    alpha: boolean;
 }
 
 interface Canvas {
@@ -15,7 +16,8 @@ interface Canvas {
     clearCanvas: (canvas: Canvas) => void;
 }
 
-function resize(canvasElement: HTMLCanvasElement, config: CanvasConfig) {
+function resize(canvas: Canvas) {
+    const {canvasElement, config} = canvas;
     const width = window.innerWidth * config.width;
     // const height = window.innerHeight * config.height;
     const height = Math.min(window.innerHeight * config.height, width * 1.2);
@@ -28,6 +30,7 @@ function setParentDimensions(config: CanvasConfig, parentElement: HTMLElement) {
 }
 
 function createSpectrogramCanvas(config: CanvasConfig, parentElement: HTMLElement): Canvas | null {
+    // return createCanvas(config, parentElement, throttled(drawSpectrogramCanvasFrame, 100))
     return createCanvas(config, parentElement, drawSpectrogramCanvasFrame)
 }
 
@@ -43,7 +46,8 @@ function createFrequencyCanvas(config: CanvasConfig, parentElement: HTMLElement)
     return createCanvas(config, parentElement, drawFrequencyCanvasFrame)
 }
 
-function createCanvas(config: CanvasConfig, 
+function createCanvas(
+    config: CanvasConfig, 
     parentElement: HTMLElement, 
     startAnimating: (canvas: Canvas, timeSeries: SpectralTimeSeries) => void,
     ): Canvas | null {
@@ -51,7 +55,7 @@ function createCanvas(config: CanvasConfig,
     const canvasElement = document.createElement("canvas");
     canvasElement.setAttribute("id", "canvas");
     parentElement.appendChild(canvasElement);
-    const context = canvasElement.getContext("2d");
+    const context = canvasElement.getContext("2d", {alpha: config.alpha});
     if (context === null) {
         return null;
     }
@@ -59,7 +63,7 @@ function createCanvas(config: CanvasConfig,
         config,
         canvasElement,
         context,
-        resize: () => resize(canvasElement, config),
+        resize: () => resize(canvas),
         startAnimating,
         animationFrame: null,
         stopAnimating,
@@ -76,16 +80,41 @@ function stopAnimating(animationFrame: number) {
 
 function drawColumns(canvas: Canvas,  timeSeries: SpectralTimeSeries) {
     const {frequencyBinCount, decibelValues} = timeSeries;
-    const canvasContext = canvas.context;
-    canvasContext.clearRect(0, 0, canvas.canvasElement.width, canvas.canvasElement.height)
+    // const canvasContext = canvas.context;
+    // const canvasContext = document.createElement('canvas')
+    // canvasContext.clearRect(0, 0, canvas.canvasElement.width, canvas.canvasElement.height)
+    canvas.context.fillStyle = "hsl(255, 100%, 50%)";
     const columnWidth = canvas.canvasElement.width / decibelValues.length;
     const binHeight = canvas.canvasElement.height / frequencyBinCount;
+    canvas.context.fillRect(0,0, canvas.canvasElement.width, canvas.canvasElement.height);
     
     decibelValues.forEach((decibels, index) => {
         drawColumn(canvas, decibels, binHeight, index, columnWidth)
     })
 
 }
+
+function drawColumn(canvas: Canvas, decibelValues: number[], binHeight: number, index: number, columnWidth: number) {
+    for (const [i, decibelValue] of decibelValues.entries()) {
+        if (decibelValue === 0) {
+            continue;
+        }
+        const h = 255 - decibelValue;
+        canvas.context.fillStyle = `hsl(${h}, 100%, 50%)`
+        const yStart = canvas.canvasElement.height - (binHeight * (i + 1)) // canvas.height corresponds to bottom of the canvas
+        canvas.context.fillRect(index * columnWidth, yStart, columnWidth, binHeight)
+    }
+    // decibelValues.forEach((decibelValue, i) => {
+    //     if (decibelValue === 0) {
+    //         continue;
+    //     }
+    //     const h = 255 - decibelValue;
+    //     canvas.context.fillStyle = `hsl(${h}, 100%, 50%)`
+    //     const yStart = canvas.canvasElement.height - (binHeight * (i + 1)) // canvas.height corresponds to bottom of the canvas
+    //     canvas.context.fillRect(index * columnWidth, yStart, columnWidth, binHeight)
+    // })
+}
+
 
 function drawOscilloscopeVisual(canvas: Canvas,  timeSeries: SpectralTimeSeries) {
     const {timeDomainValues} = timeSeries;
@@ -116,14 +145,6 @@ function drawOscilloscopeVisual(canvas: Canvas,  timeSeries: SpectralTimeSeries)
         };
         canvasContext.lineTo(canvas.canvasElement.width, canvas.canvasElement.height/2);
         canvasContext.stroke();
-}
-function drawColumn(canvas: Canvas, decibelValues: number[], binHeight: number, index: number, columnWidth: number) {
-    decibelValues.forEach((decibelValue, i) => {
-        const h = 255 - decibelValue;
-        canvas.context.fillStyle = `hsl(${h}, 100%, 50%)`
-        const yStart = canvas.canvasElement.height - (binHeight * (i + 1)) // canvas.height corresponds to bottom of the canvas
-        canvas.context.fillRect(index * columnWidth, yStart, columnWidth, binHeight)
-    })
 }
 
 function drawLegend(canvas: Canvas, timeSeries: SpectralTimeSeries) {
@@ -185,18 +206,33 @@ function drawBar(x: number, y: number, height: number, barWidth: number, canvasC
 
 }
 
+const throttled = (callback: Function, interval: number) => {
+    let allowed = true;
+    return (...params: any[]) => {
+        if (allowed) {
+            callback(...params);
+            allowed = false
+            setTimeout(() => allowed = true, interval)
+        } else {
+            console.log("not enough time has passed")
+        }
+        }     
+} 
+
+const throttledDrawColumns = throttled(drawColumns, 50)
+
 function drawSpectrogramCanvasFrame(canvas: Canvas, timeSeries: SpectralTimeSeries) {
     canvas.animationFrame = requestAnimationFrame(() => drawSpectrogramCanvasFrame(canvas, timeSeries))
     timeSeries.pushDecibelValues(timeSeries.decibelValues, timeSeries.analyserNode, timeSeries.maxSampleCount);
-  
-    drawColumns(canvas, timeSeries);
+    // drawColumns(canvas, timeSeries);
+    throttledDrawColumns(canvas, timeSeries);
+
 }
 
 function drawOscilloscopeCanvasFrame(canvas: Canvas, timeSeries: SpectralTimeSeries) {
     canvas.animationFrame = requestAnimationFrame(() => drawOscilloscopeCanvasFrame(canvas, timeSeries))
     timeSeries.pushTimeDomainValues(timeSeries.timeDomainValues, timeSeries.analyserNode, timeSeries.maxSampleCount);
   
-    // drawOscilloscopeColumns(canvas, timeSeries);
     drawOscilloscopeVisual(canvas, timeSeries);
 }
 
