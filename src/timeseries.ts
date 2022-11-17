@@ -10,6 +10,7 @@ interface SpectralTimeSeries {
     maxDecibelValue: number;
     pushDecibelValues: (decibelValues: number[][], analyserNode: AnalyserNode, maxSampleCount: number) => number[][];
     clearDecibelValues: (timeSeries: SpectralTimeSeries) => void;
+    getDecibelValuesForFrequencyRange: (minFrequency: number, maxFrequency: number, timeSeries: SpectralTimeSeries) => number[][];
     getMaxRowValues: (matrix2d: number[][]) => number[];
     timeDomainValues: number[][];
     pushTimeDomainValues: (decibelValues: number[][], analyserNode: AnalyserNode, maxSampleCount: number) => number[][];
@@ -36,6 +37,7 @@ function createSpectralTimeSeries(maxFrequency: number, maxSampleCount: number, 
         pushTimeDomainValues,
         clearTimeDomainValues,
         getDisplayedFrequencies,
+        getDecibelValuesForFrequencyRange,
     }
     return timeSeries;
 }
@@ -54,9 +56,22 @@ function getDisplayedFrequencies(min: number, max: number, timeSeries: SpectralT
     return displayedFrequencies;
 }
 
-// function getDecibelValuesForFrequencyRange(minFrequency: number, maxFrequency: number, timeSeries: SpectralTimeSeries) {
-//     const frequencies = getf
-// }
+function getDecibelValuesForFrequencyRange(minFrequency: number, maxFrequency: number, timeSeries: SpectralTimeSeries) {
+    const frequencies = getFrequencies(timeSeries.frequencyBinCount, timeSeries.maxFrequency);
+    let outputValues =  [];
+    // for (const [index, frequency] of frequencies.entries()) {
+        for (const [_, column] of timeSeries.decibelValues.entries()) {
+            let outputColumn = [];
+            for (const [innerIndex, cell] of column.entries()) {
+                if (frequencies[innerIndex] >= minFrequency && frequencies[innerIndex] <= maxFrequency) {
+                    outputColumn.push(cell);
+                }
+            }
+            outputColumn.length > 0 && outputValues.push(outputColumn);
+        }
+    // }
+    return outputValues;
+}
 
 function pushDecibelValues(decibelValues: number[][], analyserNode: AnalyserNode, maxSampleCount: number): number[][] {
     const newDecibalValues = new Uint8Array(analyserNode.frequencyBinCount)

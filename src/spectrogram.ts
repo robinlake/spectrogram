@@ -59,7 +59,8 @@ function initializeSpectrogram(config: SpectrogramConfig): Spectrogram {
     const volume = <HTMLInputElement>document.getElementById('volume')
     const gainNode = new GainNode(context, {gain: Number(volume.value)})
     const frequencyBinCount = fftSize / 2;
-    const timeSeries = createSpectralTimeSeries(sampleRate, maxSampleCount, frequencyBinCount, analyserNode)
+    const maxFrequency = sampleRate / 2; // can only detect frequencies up to half the sample rate, beyond that aliasing will occur
+    const timeSeries = createSpectralTimeSeries(maxFrequency, maxSampleCount, frequencyBinCount, analyserNode)
     const spectrogram = {
         analyserNode,
         context,

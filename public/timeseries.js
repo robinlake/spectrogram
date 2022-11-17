@@ -18,6 +18,7 @@ function createSpectralTimeSeries(maxFrequency, maxSampleCount, frequencyBinCoun
         pushTimeDomainValues,
         clearTimeDomainValues,
         getDisplayedFrequencies,
+        getDecibelValuesForFrequencyRange,
     };
     return timeSeries;
 }
@@ -33,9 +34,22 @@ function getDisplayedFrequencies(min, max, timeSeries) {
     const displayedFrequencies = frequencies.filter(x => x >= min && x <= max);
     return displayedFrequencies;
 }
-// function getDecibelValuesForFrequencyRange(minFrequency: number, maxFrequency: number, timeSeries: SpectralTimeSeries) {
-//     const frequencies = getf
-// }
+function getDecibelValuesForFrequencyRange(minFrequency, maxFrequency, timeSeries) {
+    const frequencies = getFrequencies(timeSeries.frequencyBinCount, timeSeries.maxFrequency);
+    let outputValues = [];
+    // for (const [index, frequency] of frequencies.entries()) {
+    for (const [_, column] of timeSeries.decibelValues.entries()) {
+        let outputColumn = [];
+        for (const [innerIndex, cell] of column.entries()) {
+            if (frequencies[innerIndex] >= minFrequency && frequencies[innerIndex] <= maxFrequency) {
+                outputColumn.push(cell);
+            }
+        }
+        outputColumn.length > 0 && outputValues.push(outputColumn);
+    }
+    // }
+    return outputValues;
+}
 function pushDecibelValues(decibelValues, analyserNode, maxSampleCount) {
     const newDecibalValues = new Uint8Array(analyserNode.frequencyBinCount);
     analyserNode.getByteFrequencyData(newDecibalValues);

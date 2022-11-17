@@ -4,7 +4,8 @@ import { createSpectrogramCanvas, createLegendCanvas, createOscilloscopeCanvas, 
 import { initializeSpectrogram } from './spectrogram.js';
 window.onload = () => {
     const fftSize = 2048;
-    const sampleRate = 44100;
+    // const sampleRate = 44100;
+    const sampleRate = 4000;
     const minDisplayedFrequency = 32;
     const maxDisplayedFrequency = 8096;
     const maxSampleCount = 200;

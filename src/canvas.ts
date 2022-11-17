@@ -163,6 +163,8 @@ function drawBars(canvas: Canvas, timeSeries: SpectralTimeSeries) {
     const {frequencyBinCount, decibelValues} = timeSeries;
     const canvasContext = canvas.context
     const frequencies = timeSeries.getFrequencies(frequencyBinCount, timeSeries.maxFrequency);
+    const newFrequencies = timeSeries.getDecibelValuesForFrequencyRange(canvas.config.minDisplayedFrequency, canvas.config.maxDisplayedFrequency, timeSeries);
+    console.log("newFrequencies: ", newFrequencies);
 
     const width = canvas.canvasElement.width
     const height = canvas.canvasElement.height
