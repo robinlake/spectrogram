@@ -82,7 +82,7 @@ function autoCorrelate(buf, sampleRate, eps = 0.001, threshold = 0.2) {
       // mat.findIndex((e, i, m) < m[i] < m[i + 1]) || SIZE - 1
       // mat.indexOf(Math.max(mat.slice(c)))
     let d = 0
-    for (d; mat[d] > mat[d + 1]; ++d);
+    for (d; mat[d] > mat[d + 1]; ++d); // find first non-decreasing row?
     for (k = g = -1; d < SIZE; d++) if (mat[d] > g) g = mat[k = d];
     let T0 = k
     const x1 = mat[T0 - 1], x2 = mat[T0], x3 = mat[T0 + 1]

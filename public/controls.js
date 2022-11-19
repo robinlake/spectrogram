@@ -1,3 +1,4 @@
+import { initializePitchDetect } from "./pitch-detect-foo.js";
 function initializeControls(spectrogramCanvas, spectrogram, legendCanvas, oscilloscopeCanvas, frequencyCanvas) {
     const { volume, gainNode, context, timeSeries } = spectrogram;
     volume.addEventListener("input", (e) => {
@@ -87,6 +88,7 @@ function initializeControls(spectrogramCanvas, spectrogram, legendCanvas, oscill
         frequency.addEventListener("change", function () {
             if (this.checked) {
                 frequencyCanvas.startAnimating(frequencyCanvas, timeSeries);
+                initializePitchDetect();
             }
             else {
                 if (frequencyCanvas === null || frequencyCanvas === void 0 ? void 0 : frequencyCanvas.animationFrame) {
@@ -96,5 +98,14 @@ function initializeControls(spectrogramCanvas, spectrogram, legendCanvas, oscill
             }
         });
     }
+    //   const pitch = document.getElementById("pitch");
+    //   if (pitch != null) {
+    //     //   console.log("pitch != null")
+    //     pitch.addEventListener("click", () => {
+    //         console.log("pitch listener")
+    //           console.log("checked")
+    //         initializePitchDetect();
+    //     });
+    //   }
 }
 export { initializeControls };

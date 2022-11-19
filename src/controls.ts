@@ -1,5 +1,6 @@
 import { Spectrogram } from "./spectrogram.js";
 import { Canvas } from "./canvas.js";
+import { initializePitchDetect } from "./pitch-detect-foo.js";
 
 function initializeControls(
   spectrogramCanvas: Canvas,
@@ -103,6 +104,7 @@ function initializeControls(
     frequency.addEventListener("change", function () {
       if (this.checked) {
         frequencyCanvas.startAnimating(frequencyCanvas, timeSeries);
+        initializePitchDetect();
       } else {
         if (frequencyCanvas?.animationFrame) {
           frequencyCanvas.stopAnimating(frequencyCanvas.animationFrame);
@@ -111,6 +113,17 @@ function initializeControls(
       }
     });
   }
+
+//   const pitch = document.getElementById("pitch");
+//   if (pitch != null) {
+//     //   console.log("pitch != null")
+//     pitch.addEventListener("click", () => {
+//         console.log("pitch listener")
+//           console.log("checked")
+//         initializePitchDetect();
+//     });
+//   }
+
 }
 
 export { initializeControls };
