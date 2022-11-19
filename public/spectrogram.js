@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { createSpectralTimeSeries } from './timeseries.js';
+import { createSpectralTimeSeries } from "./timeseries.js";
 const getUserMic = () => {
     return navigator.mediaDevices.getUserMedia({
         audio: true,
@@ -17,13 +17,11 @@ function setupAudioContext(spectrogram) {
     return __awaiter(this, void 0, void 0, function* () {
         const { context, analyserNode, gainNode } = spectrogram;
         const mic = yield getUserMic();
-        if (context.state === 'suspended') {
+        if (context.state === "suspended") {
             yield context.resume();
         }
         const source = context.createMediaStreamSource(mic);
-        source
-            .connect(gainNode)
-            .connect(analyserNode);
+        source.connect(gainNode).connect(analyserNode);
         spectrogram.source = source;
     });
 }
@@ -43,7 +41,7 @@ function initializeSpectrogram(config) {
     const { sampleRate, fftSize, maxSampleCount } = config;
     const context = new AudioContext({ sampleRate });
     const analyserNode = new AnalyserNode(context, { fftSize });
-    const volume = document.getElementById('volume');
+    const volume = document.getElementById("volume");
     const gainNode = new GainNode(context, { gain: Number(volume.value) });
     const frequencyBinCount = fftSize / 2;
     const maxFrequency = sampleRate / 2; // can only detect frequencies up to half the sample rate, beyond that aliasing will occur

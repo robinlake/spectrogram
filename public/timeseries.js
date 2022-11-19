@@ -31,7 +31,7 @@ function getFrequencies(frequencyBinCount, maxFrequency) {
 }
 function getDisplayedFrequencies(min, max, timeSeries) {
     const frequencies = timeSeries.getFrequencies(timeSeries.frequencyBinCount, timeSeries.maxFrequency);
-    const displayedFrequencies = frequencies.filter(x => x >= min && x <= max);
+    const displayedFrequencies = frequencies.filter((x) => x >= min && x <= max);
     return displayedFrequencies;
 }
 function getDecibelValuesForFrequencyRange(minFrequency, maxFrequency, timeSeries) {
@@ -43,7 +43,8 @@ function getDecibelValuesForFrequencyRange(minFrequency, maxFrequency, timeSerie
             continue;
         }
         for (const [innerIndex, cell] of column.entries()) {
-            if (frequencies[innerIndex] >= minFrequency && frequencies[innerIndex] <= maxFrequency) {
+            if (frequencies[innerIndex] >= minFrequency &&
+                frequencies[innerIndex] <= maxFrequency) {
                 outputColumn.push(cell);
             }
         }

@@ -1,5 +1,3 @@
-// Code taken from https://jsfiddle.net/yckart/f0tnhjzy/
-
 // https://github.com/cwilso/PitchDetect/pull/23
 // https://github.com/dalatant/PitchDetect/blob/b0d5d28d2803d852dd85d2a1e53c22bcedba4cbf/js/pitchdetect.js
 // https://github.com/peterkhayes/pitchfinder

@@ -1,16 +1,16 @@
 function initializeControls(spectrogramCanvas, spectrogram, legendCanvas, oscilloscopeCanvas, frequencyCanvas) {
     const { volume, gainNode, context, timeSeries } = spectrogram;
-    volume.addEventListener('input', e => {
+    volume.addEventListener("input", (e) => {
         if (e.target != null) {
             const value = parseFloat(e.target.value);
-            gainNode.gain.setTargetAtTime(value, context.currentTime, .01);
+            gainNode.gain.setTargetAtTime(value, context.currentTime, 0.01);
             const label = volume.nextElementSibling;
             label && (label.innerHTML = Math.round(value * 100).toString() + " %");
         }
     });
     const spectrogramRefresh = document.getElementById("spectrogramRefresh");
     if (spectrogramRefresh != null) {
-        spectrogramRefresh.addEventListener('input', e => {
+        spectrogramRefresh.addEventListener("input", (e) => {
             if (e.target != null) {
                 const value = parseFloat(e.target.value);
                 spectrogramCanvas.setAnimationRate(spectrogramCanvas, value);
@@ -30,7 +30,8 @@ function initializeControls(spectrogramCanvas, spectrogram, legendCanvas, oscill
     const stopButton = document.getElementById("stopButton");
     if (stopButton != null) {
         stopButton.addEventListener("click", () => {
-            if (spectrogramCanvas != null && spectrogramCanvas.animationFrame != null) {
+            if (spectrogramCanvas != null &&
+                spectrogramCanvas.animationFrame != null) {
                 spectrogramCanvas.stopAnimating(spectrogramCanvas.animationFrame);
             }
         });
@@ -67,7 +68,7 @@ function initializeControls(spectrogramCanvas, spectrogram, legendCanvas, oscill
             }
         });
     }
-    const oscilloscope = document.getElementById("oscilloscope");
+    const oscilloscope = (document.getElementById("oscilloscope"));
     if (oscilloscope != null) {
         oscilloscope.addEventListener("change", function () {
             if (this.checked) {

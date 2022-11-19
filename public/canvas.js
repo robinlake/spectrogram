@@ -9,7 +9,7 @@ function resize(canvas) {
     canvasElement.height = height;
 }
 function setParentDimensions(config, parentElement) {
-    parentElement.style.height = Math.max((window.innerHeight * config.height), parentElement.clientHeight).toString();
+    parentElement.style.height = Math.max(window.innerHeight * config.height, parentElement.clientHeight).toString();
 }
 function createSpectrogramCanvas(config, parentElement) {
     return createCanvas(config, parentElement, drawSpectrogramCanvasFrame, throttled(drawColumns, 250));
@@ -45,7 +45,7 @@ function createCanvas(config, parentElement, startAnimating, animationFunction) 
         setAnimationRate,
     };
     canvas.resize();
-    window.addEventListener('resize', () => canvas.resize());
+    window.addEventListener("resize", () => canvas.resize());
     return canvas;
 }
 function stopAnimating(animationFrame) {
@@ -60,7 +60,8 @@ function drawColumns(canvas, timeSeries) {
     const decibelValuesToDisplay = timeSeries.getDecibelValuesForFrequencyRange(canvas.config.minDisplayedFrequency, canvas.config.maxDisplayedFrequency, timeSeries);
     canvas.context.fillStyle = "hsl(255, 100%, 50%)";
     const columnWidth = canvas.canvasElement.width / decibelValuesToDisplay.length;
-    const binHeight = canvas.canvasElement.height / decibelValuesToDisplay[decibelValuesToDisplay.length - 1].length;
+    const binHeight = canvas.canvasElement.height /
+        decibelValuesToDisplay[decibelValuesToDisplay.length - 1].length;
     canvas.context.fillRect(0, 0, canvas.canvasElement.width, canvas.canvasElement.height);
     decibelValuesToDisplay.forEach((decibels, index) => {
         drawColumn(canvas, decibels, binHeight, index, columnWidth);
@@ -73,7 +74,7 @@ function drawColumn(canvas, decibelValues, binHeight, index, columnWidth) {
         }
         const h = 255 - decibelValue;
         canvas.context.fillStyle = `hsl(${h}, 100%, 50%)`;
-        const yStart = canvas.canvasElement.height - (binHeight * (i + 1)); // canvas.height corresponds to bottom of the canvas
+        const yStart = canvas.canvasElement.height - binHeight * (i + 1); // canvas.height corresponds to bottom of the canvas
         canvas.context.fillRect(index * columnWidth, yStart, columnWidth, binHeight);
     }
 }
@@ -81,10 +82,10 @@ function drawOscilloscopeVisual(canvas, timeSeries) {
     const { timeDomainValues } = timeSeries;
     const canvasContext = canvas.context;
     canvasContext.clearRect(0, 0, canvas.canvasElement.width, canvas.canvasElement.height);
-    canvasContext.fillStyle = 'rgba(230, 130, 210, .3)';
+    canvasContext.fillStyle = "rgba(230, 130, 210, .3)";
     canvasContext.fillRect(0, 0, canvas.canvasElement.width, canvas.canvasElement.height);
     canvasContext.lineWidth = 2;
-    canvasContext.strokeStyle = 'rgb(0,0,0)';
+    canvasContext.strokeStyle = "rgb(0,0,0)";
     canvasContext.beginPath();
     const bufferLength = timeSeries.analyserNode.frequencyBinCount;
     let sliceWidth = canvas.canvasElement.width / bufferLength;
@@ -92,7 +93,7 @@ function drawOscilloscopeVisual(canvas, timeSeries) {
     let x = 0;
     for (var i = 0; i < bufferLength; i++) {
         var v = column[i] / 128.0;
-        var y = v * canvas.canvasElement.height / 2;
+        var y = (v * canvas.canvasElement.height) / 2;
         if (i === 0) {
             canvasContext.moveTo(x, y);
         }
@@ -101,7 +102,6 @@ function drawOscilloscopeVisual(canvas, timeSeries) {
         }
         x += sliceWidth;
     }
-    ;
     canvasContext.lineTo(canvas.canvasElement.width, canvas.canvasElement.height / 2);
     canvasContext.stroke();
 }
@@ -118,7 +118,7 @@ function drawBars(canvas, timeSeries) {
     const mostRecentDecibelValues = decibelValuesToDisplay[decibelValuesToDisplay.length - 1];
     // const mostRecentDecibelValues = decibelValues[decibelValues.length - 1];
     const copy = mostRecentDecibelValues.slice();
-    const sorted = copy.sort((a, b) => a < b ? 1 : -1);
+    const sorted = copy.sort((a, b) => (a < b ? 1 : -1));
     const labelCutoffValue = sorted[20];
     const width = canvas.canvasElement.width;
     const height = canvas.canvasElement.height;
@@ -126,7 +126,7 @@ function drawBars(canvas, timeSeries) {
     const barWidth = width / mostRecentDecibelValues.length;
     canvasContext.clearRect(0, 0, width, height);
     mostRecentDecibelValues.forEach((item, index) => {
-        const y = item / 255 * height / 2;
+        const y = ((item / 255) * height) / 2;
         const x = barWidth * index;
         // check if current value is the max of the 3 preceding and 3 following values, accounting for out of bound array indices
         const localMax = isLocalMaximum(item, mostRecentDecibelValues.slice(Math.max(0, index - 3), Math.min(index + 3, mostRecentDecibelValues.length - 1)));
@@ -137,10 +137,10 @@ function drawBars(canvas, timeSeries) {
     });
 }
 function isLocalMaximum(value, range) {
-    return value >= range.reduce((x, y) => x > y ? x : y);
+    return value >= range.reduce((x, y) => (x > y ? x : y));
 }
 function drawBar(x, y, height, barWidth, canvasContext) {
-    canvasContext.fillStyle = `hsl(${y / height * 400}, 100%, 50%)`;
+    canvasContext.fillStyle = `hsl(${(y / height) * 400}, 100%, 50%)`;
     canvasContext.fillRect(x, height - y, barWidth, y);
 }
 const throttled = (callback, interval) => {
@@ -150,10 +150,10 @@ const throttled = (callback, interval) => {
         if (allowed) {
             callback(...params);
             allowed = false;
-            setTimeout(() => allowed = true, currentInterval);
+            setTimeout(() => (allowed = true), currentInterval);
         }
     };
-    throttledFunc.changeInterval = (newInterval) => currentInterval = newInterval;
+    throttledFunc.changeInterval = (newInterval) => (currentInterval = newInterval);
     return throttledFunc;
 };
 function drawLegend(canvas, timeSeries) {
@@ -171,7 +171,7 @@ function drawLegend(canvas, timeSeries) {
         // for (const [index, frequency] of frequencies.entries()) {
         currentRowHeight += iterationHeight;
         if (currentRowHeight >= minRowHeight) {
-            const height = (iterationHeight) * index;
+            const height = iterationHeight * index;
             canvas.context.strokeText(Math.round(frequency).toString() + " hz", 0, canvas.canvasElement.height - height);
             currentRowHeight = 0;
         }
@@ -196,4 +196,4 @@ function drawFrequencyCanvasFrame(canvas, timeSeries) {
     timeSeries.pushDecibelValues(timeSeries.decibelValues, timeSeries.analyserNode, timeSeries.maxSampleCount);
     canvas.animationFunction(canvas, timeSeries);
 }
-export { resize, drawColumn, createSpectrogramCanvas, createLegendCanvas, createOscilloscopeCanvas, createFrequencyCanvas };
+export { resize, drawColumn, createSpectrogramCanvas, createLegendCanvas, createOscilloscopeCanvas, createFrequencyCanvas, };
