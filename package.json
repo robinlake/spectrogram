@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "npm run watch:ts & npm run watch:sass",
+    "build": "tsc && npm run sass",
     "test": "jest",
     "prettier-watch": "onchange 'src/**/*.ts' -- prettier --write {{changed}}",
     "watch:sass": "sass --no-source-map --watch src/style.scss:public/css/style.css",

@@ -51,6 +51,7 @@ window.onload = () => {
     spectrogramCanvasConfig,
     canvasContainer
   );
+  console.log('foo')
   const legendCanvas = createLegendCanvas(legendCanvasConfig, canvasContainer);
   const oscilloscopeCanvas = createOscilloscopeCanvas(
     oscilloscopeCanvasConfig,
