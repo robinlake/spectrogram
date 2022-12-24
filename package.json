@@ -9,7 +9,7 @@
     "test": "jest",
     "prettier-watch": "onchange 'src/**/*.ts' -- prettier --write {{changed}}",
     "sass": "sass --no-source-map src/style.scss:public/css/style.css",
-    "watch:sass": "sass --no-source-map --watch src/style.scss:public/css/style.css",
+    "watch:sass": "npm run sass -- --watch",
     "watch:ts": "tsc -w",
     "watch:ts-prettier": "tsc -w && npm run prettier-watch"
   },
