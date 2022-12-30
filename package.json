@@ -3,9 +3,13 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
+    "dev": "vite",
     "start": "npm run watch:ts & npm run watch:sass",
-    "build": "tsc && npm run sass",
+    "build": "tsc && vite build",
+    "build-old": "tsc && npm run sass",
+    "preview": "vite preview",
     "test": "jest",
     "prettier-watch": "onchange 'src/**/*.ts' -- prettier --write {{changed}}",
     "sass": "sass --no-source-map src/style.scss:public/css/style.css",
@@ -32,5 +36,8 @@
     "prettier": "2.7.1",
     "sass": "^1.56.1",
     "ts-jest": "^29.0.3"
+  },
+  "dependencies": {
+    "vite": "^4.0.3"
   }
 }

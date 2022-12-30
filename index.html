@@ -1,0 +1,88 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + TS</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/index.ts"></script>
+  </body>
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spectrogram</title>
+    <!-- <script src="index.js" type="module" defer></script> -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- <link rel="stylesheet" href="css/pico.min.css"> -->
+</head>
+<body>
+    <div class="content">
+        <h1>Spectrogram</h1>
+        <div class="canvas">
+        </div>
+        <!-- pitch detector stuff -->
+        <div id="detector" class="vague hidden">
+            <div class="pitch"><span id="pitch">--</span>Hz</div>
+            <div class="note"><span id="note">--</span></div>
+            <canvas id="output" width=300 height=42></canvas>
+            <div id="detune"><span id="detune_amt">--</span><span id="flat">cents &#9837;</span><span id="sharp">cents &#9839;</span></div>
+        </div>          
+        <div>
+            <!-- <button id="pitch">Show Pitch</button> -->
+            <!-- <input type="checkbox" role="switch" id="pitch"> -->
+        </div>
+        <div class="controls">
+            <div class="row">
+                <button id="startButton">Start Spectrogram</button>
+                <button id="stopButton">Stop Spectrogram</button>
+                <button id="resetButton">Reset Data</button>
+                <button id="pitch-detect">Show Pitch</button>
+            </div>
+            <div class="options">
+                <h2>Options</h2>
+                <div class="group">
+                    <label for="volume">Volume</label>
+                    <div class="row-slider">
+                        <input type="range" min="0" max="1" value=".5" step=".01" id="volume">
+                        <output>50 %</output>
+                    </div>
+                </div>
+                <div class="group">
+                    <label for="spectrogramRefresh">Spectrogram Refresh Rate</label>
+                    <div class="row-slider">
+                        <input type="range" min="15" max="1000" value="50" step="5" id="spectrogramRefresh">
+                        <output>50 ms</output>
+                    </div>
+                </div>
+                <div>
+                    <label for="hearAudio">Hear My Audio</label>
+                    <input type="checkbox" role="switch" id="hearAudio">
+                </div>
+                <div>
+                    <label for="legend">Include Legend</label>
+                    <input type="checkbox" role="switch" id="legend">
+                </div>
+                <div>
+                    <label for="oscilloscope">Show Oscilloscope View</label>
+                    <input type="checkbox" role="switch" id="oscilloscope">
+                </div>
+                <div>
+                    <label for="frequency">Show Frequency View</label>
+                    <input type="checkbox" role="switch" id="frequency">
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div id="app"></div>
+    <script type="module" src="/src/index.ts"></script>
+</body>
+<!-- <script src="pitch-detect-foo.js"></script> -->
+</html>
