@@ -15,7 +15,7 @@
         <div class="canvas">
         </div>
         <!-- pitch detector stuff -->
-        <div id="detector" class="vague">
+        <div id="detector" class="vague hidden">
             <div class="pitch"><span id="pitch">--</span>Hz</div>
             <div class="note"><span id="note">--</span></div>
             <canvas id="output" width=300 height=42></canvas>
@@ -30,6 +30,7 @@
                 <button id="startButton">Start Spectrogram</button>
                 <button id="stopButton">Stop Spectrogram</button>
                 <button id="resetButton">Reset Data</button>
+                <button id="pitch-detect">Show Pitch</button>
             </div>
             <div class="options">
                 <h2>Options</h2>

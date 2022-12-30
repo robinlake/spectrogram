@@ -104,7 +104,6 @@ function initializeControls(
     frequency.addEventListener("change", function () {
       if (this.checked) {
         frequencyCanvas.startAnimating(frequencyCanvas, timeSeries);
-        initializePitchDetect();
       } else {
         if (frequencyCanvas?.animationFrame) {
           frequencyCanvas.stopAnimating(frequencyCanvas.animationFrame);
@@ -114,15 +113,31 @@ function initializeControls(
     });
   }
 
-//   const pitch = document.getElementById("pitch");
-//   if (pitch != null) {
-//     //   console.log("pitch != null")
-//     pitch.addEventListener("click", () => {
-//         console.log("pitch listener")
-//           console.log("checked")
-//         initializePitchDetect();
-//     });
-//   }
+  const pitch = document.getElementById("pitch-detect");
+  const detector = document.getElementById("detector");
+  if (pitch != null && detector != null) {
+    let initialized = false;
+    let active = false;
+    pitch.addEventListener("click", () => {
+          if(!initialized) {
+            initializePitchDetect();
+            initialized = true;
+            active = true;
+            pitch.innerHTML = "Hide Pitch"
+            detector.classList.remove('hidden');
+            return;
+          }
+          if (!active) {
+            active = true;
+            pitch.innerHTML = "Hide Pitch"
+            detector.classList.remove('hidden');
+          } else {
+            active = false;
+            pitch.innerHTML = "Show Pitch"
+            detector.classList.add('hidden');
+          }
+    });
+  }
 
 }
 

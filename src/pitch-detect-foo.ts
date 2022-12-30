@@ -199,7 +199,9 @@ function updatePitch() {
   const ac = sf(numberBuf, audioContext.sampleRate);
 
   if (ac === -1 && detectorElem && pitchElem && noteElem && detuneElem && detuneAmount) {
-    detectorElem.className = 'vague';
+    // detectorElem.className = 'vague';
+    detectorElem.classList.add('vague');
+    detectorElem.classList.remove('confident');
     pitchElem.textContent = '--';
     noteElem.textContent = '-';
     detuneElem.className = '';
@@ -209,7 +211,9 @@ function updatePitch() {
     const note = noteFromPitch(pitch);
     const detune = centsOffFromPitch(pitch, note);
     if (detectorElem && pitchElem && noteElem && detuneElem && detuneAmount) {
-      detectorElem.className = 'confident';
+      // detectorElem.className = 'confident';
+      detectorElem.classList.add('confident');
+      detectorElem.classList.remove('vague');
       pitchElem.textContent = Math.round(pitch).toString();
       noteElem.textContent = noteStrings[note % 12];
       if (detune == 0) {
