@@ -26,6 +26,7 @@
   "homepage": "https://github.com/robinlake/spectrogram#readme",
   "devDependencies": {
     "@types/jest": "^29.2.3",
+    "@webgpu/types": "^0.1.23",
     "jest": "^29.3.1",
     "onchange": "^7.1.0",
     "prettier": "2.7.1",
